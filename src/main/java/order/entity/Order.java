@@ -1,11 +1,19 @@
-package order.model.request;
+package order.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
-public class OrderDetailsRequestModel {
+@Entity
+@Table(name = "order_table")
+public class Order {
+
+    @Id
     private String orderId;
+
     private String account;
-    private String symbol;
 
     public String getOrderId() {
         return orderId;
@@ -39,12 +47,12 @@ public class OrderDetailsRequestModel {
         this.quantity = quantity;
     }
 
-    public boolean isIs_buy() {
-        return is_buy;
+    public boolean isBuy() {
+        return buy;
     }
 
-    public void setIs_buy(boolean is_buy) {
-        this.is_buy = is_buy;
+    public void setBuy(boolean buy) {
+        this.buy = buy;
     }
 
     public BigDecimal getLimitPrice() {
@@ -55,7 +63,12 @@ public class OrderDetailsRequestModel {
         this.limitPrice = limitPrice;
     }
 
+    private String symbol;
+
     private int quantity;
-    private boolean is_buy;
+
+    private boolean buy;
+
     private BigDecimal limitPrice;
+
 }

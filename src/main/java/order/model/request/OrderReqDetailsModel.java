@@ -1,10 +1,10 @@
-package order.model.response;
+package order.model.request;
 
 import java.math.BigDecimal;
 
-public class OrderRest {
-
+public class OrderReqDetailsModel {
     private String orderId;
+    private String account;
 
     public String getOrderId() {
         return orderId;
@@ -54,7 +54,6 @@ public class OrderRest {
         this.limitPrice = limitPrice;
     }
 
-    private String account;
     private String symbol;
     private int quantity;
     private boolean buy;
