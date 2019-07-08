@@ -1,4 +1,4 @@
-package exceptions;
+package order.exceptions;
 
 public class AppExceptionsHandler {
 }
