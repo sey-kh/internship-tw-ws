@@ -6,6 +6,7 @@ import order.exceptions.UserError;
 import order.service.OrderRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -27,8 +28,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         return now;
     }
-
-
 
     @Override
     public List<Order> findOrdersByAccountAndSymbol(String account, String symbol) {
@@ -61,22 +60,20 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public Order updateQuantity(int quantity, String orderId) {
         EntityManager em = emf.createEntityManager();
 
-        try{
+        try {
             Order order = em.find(Order.class, orderId);
-            if (order.getStatus() == "confirmed"){
+            if (order.getStatus() == "confirmed") {
                 em.getTransaction().begin();
                 order.setQuantity(quantity);
                 order.setModifiedDate(this.getDateNow());
                 em.getTransaction().commit();
                 em.close();
                 return order;
-            }
-            else{
+            } else {
                 throw new UserError("You tried to update to cancelled order");
             }
 
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             em.close();
             throw new OrderNotFoundException("There is no id-" + orderId);
         }
@@ -101,8 +98,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     public Order cancelOrder(String orderId) {
         EntityManager em = emf.createEntityManager();
 
-        try
-        {
+        try {
             Order order = em.find(Order.class, orderId);
             em.getTransaction().begin();
             order.setStatus("cancelled");
@@ -110,9 +106,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             em.getTransaction().commit();
             em.close();
             return order;
-        }
-        catch(NullPointerException e)
-        {
+        } catch (NullPointerException e) {
             em.close();
             throw new OrderNotFoundException("id-" + orderId);
         }
