@@ -5,6 +5,12 @@ import java.math.BigDecimal;
 public class OrderRest {
 
     private String orderId;
+    private String account;
+    private String symbol;
+    private int quantity;
+    private boolean buy;
+    private BigDecimal limitPrice;
+    private String status;
 
     public String getOrderId() {
         return orderId;
@@ -54,10 +60,13 @@ public class OrderRest {
         this.limitPrice = limitPrice;
     }
 
-    private String account;
-    private String symbol;
-    private int quantity;
-    private boolean buy;
-    private BigDecimal limitPrice;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface OrderRepositoryCustom {
     List<Order> findOrdersByAccountAndSymbol(String account, String symbol);
-    void updateQuantity(int quantity, String orderId);
-    void createOrder(Order order);
+    Order updateQuantity(int quantity, String orderId);
+    String createOrder(Order order);
+    Order cancelOrder(String orderId);
 }

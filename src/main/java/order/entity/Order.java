@@ -15,6 +15,14 @@ public class Order {
 
     private String account;
 
+    private String symbol;
+
+    private int quantity;
+
+    private boolean buy;
+
+    private BigDecimal limitPrice;
+
     public String getOrderId() {
         return orderId;
     }
@@ -63,12 +71,14 @@ public class Order {
         this.limitPrice = limitPrice;
     }
 
-    private String symbol;
+    public String getStatus() {
+        return Status;
+    }
 
-    private int quantity;
+    public void setStatus(String status) {
+        Status = status;
+    }
 
-    private boolean buy;
-
-    private BigDecimal limitPrice;
+    private String Status;
 
 }

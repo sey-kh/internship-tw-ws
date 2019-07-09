@@ -10,9 +10,9 @@ import order.service.OrderRepositoryCustom;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,22 +47,37 @@ public class OrderController {
         return returnValue;
     }
 
+    @GetMapping(path = "/{orderId}/cancel")
+    public HashMap<String, String> cancelOrder(@PathVariable String orderId) {
+        Order order = orderRepositoryCustom.cancelOrder(orderId);
+        HashMap<String, String> returnValue = new HashMap<String, String>();
+        returnValue.put("orderId", orderId);
+        returnValue.put("status", order.getStatus());
+        return returnValue;
+    }
+
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
-    public Order createOrder(@RequestBody OrderReqDetailsModel orderReq) {
+    public HashMap<String, String> createOrder(@RequestBody OrderReqDetailsModel orderReq) {
         Order order = new Order();
+        orderReq.setStatus("confirmed");
         BeanUtils.copyProperties(orderReq, order);
-        orderRepositoryCustom.createOrder(order);
-        return null;
+        String orderId = orderRepositoryCustom.createOrder(order);
+        HashMap<String, String> returnValue = new HashMap<String, String>();
+        returnValue.put("orderId", orderId);
+        returnValue.put("status", order.getStatus());
+        return returnValue;
     }
 
     @PatchMapping(path = "/{orderId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity updateOrder(@PathVariable String orderId,
-                                      @RequestBody OrderReqPartialModel updateQuantity) {
-        orderRepositoryCustom.updateQuantity(updateQuantity.getQuantity(), orderId);
-        return null;
+    public OrderRest updateOrder(@PathVariable String orderId,
+                                 @RequestBody OrderReqPartialModel updateQuantity) {
+        Order order = orderRepositoryCustom.updateQuantity(updateQuantity.getQuantity(), orderId);
+        OrderRest returnValue = new OrderRest();
+        BeanUtils.copyProperties(order, returnValue);
+        return returnValue;
     }
 
 }

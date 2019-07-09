@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
@@ -31,8 +32,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         if (symbol.length() == 0) {
             predicates.add(cb.equal(order.get("account"), account));
 
-        }
-        else{
+        } else {
             predicates.add(cb.equal(order.get("account"), account));
             predicates.add(cb.equal(order.get("symbol"), symbol));
         }
@@ -41,21 +41,34 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public void updateQuantity(int quantity, String orderId) {
+    public Order updateQuantity(int quantity, String orderId) {
         EntityManager em = emf.createEntityManager();
         Order order = em.find(Order.class, orderId);
         em.getTransaction().begin();
         order.setQuantity(quantity);
         em.getTransaction().commit();
-
+        return order;
     }
 
     @Override
-    public void createOrder(Order order) {
+    public String createOrder(Order order) {
+        String uniqueID = UUID.randomUUID().toString();
+        order.setOrderId(uniqueID);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(order);
         em.getTransaction().commit();
+        return uniqueID;
+    }
+
+    @Override
+    public Order cancelOrder(String orderId) {
+        EntityManager em = emf.createEntityManager();
+        Order order = em.find(Order.class, orderId);
+        em.getTransaction().begin();
+        order.setStatus("cancelled");
+        em.getTransaction().commit();
+        return order;
     }
 
 }
