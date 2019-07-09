@@ -37,7 +37,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             predicates.add(cb.equal(order.get("symbol"), symbol));
         }
         cq.where(predicates.toArray(new Predicate[0]));
-        return em.createQuery(cq).getResultList();
+        List<Order> results = em.createQuery(cq).getResultList();
+        em.close();
+        return results;
     }
 
     @Override
@@ -47,6 +49,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         em.getTransaction().begin();
         order.setQuantity(quantity);
         em.getTransaction().commit();
+        em.close();
         return order;
     }
 
@@ -58,6 +61,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         em.getTransaction().begin();
         em.persist(order);
         em.getTransaction().commit();
+        em.close();
         return uniqueID;
     }
 
@@ -68,6 +72,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         em.getTransaction().begin();
         order.setStatus("cancelled");
         em.getTransaction().commit();
+        em.close();
         return order;
     }
 
