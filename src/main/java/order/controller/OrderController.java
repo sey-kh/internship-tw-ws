@@ -47,16 +47,6 @@ public class OrderController {
         return returnValue;
     }
 
-    @GetMapping(path = "/{orderId}/cancel")
-    public HashMap<String, String> cancelOrder(@PathVariable String orderId) {
-        Order order = orderRepositoryCustom.cancelOrder(orderId);
-        HashMap<String, String> returnValue = new HashMap<String, String>();
-        returnValue.put("orderId", orderId);
-        returnValue.put("status", order.getStatus());
-        return returnValue;
-    }
-
-
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, String> createOrder(@RequestBody OrderReqDetailsModel orderReq) {
@@ -77,6 +67,17 @@ public class OrderController {
         Order order = orderRepositoryCustom.updateQuantity(updateQuantity.getQuantity(), orderId);
         OrderRest returnValue = new OrderRest();
         BeanUtils.copyProperties(order, returnValue);
+        return returnValue;
+    }
+
+    @PatchMapping(path = "/cancel")
+    public HashMap<String, String> cancelOrder(
+            @RequestBody HashMap cancelReq) {
+        String orderId = (String) cancelReq.get("orderId");
+        Order order = orderRepositoryCustom.cancelOrder(orderId);
+        HashMap<String, String> returnValue = new HashMap<String, String>();
+        returnValue.put("orderId", orderId);
+        returnValue.put("status", order.getStatus());
         return returnValue;
     }
 
