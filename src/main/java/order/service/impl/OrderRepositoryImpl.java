@@ -2,6 +2,7 @@ package order.service.impl;
 
 import order.entity.Order;
 import order.exceptions.OrderNotFoundException;
+import order.exceptions.UserError;
 import order.service.OrderRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,12 +23,21 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     @Autowired
     private EntityManagerFactory emf;
 
+    public String getDateNow() {
+        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+        return now;
+    }
+
+
+
     @Override
     public List<Order> findOrdersByAccountAndSymbol(String account, String symbol) {
+
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> cq = cb.createQuery(Order.class);
         Root<Order> order = cq.from(Order.class);
+        cq.orderBy(cb.asc(order.get("orderDate")));
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -52,15 +63,22 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
         try{
             Order order = em.find(Order.class, orderId);
-            em.getTransaction().begin();
-            order.setQuantity(quantity);
-            em.getTransaction().commit();
-            em.close();
-            return order;
+            if (order.getStatus() == "confirmed"){
+                em.getTransaction().begin();
+                order.setQuantity(quantity);
+                order.setModifiedDate(this.getDateNow());
+                em.getTransaction().commit();
+                em.close();
+                return order;
+            }
+            else{
+                throw new UserError("You tried to update to cancelled order");
+            }
+
         }
         catch (NullPointerException e){
             em.close();
-            throw new OrderNotFoundException("id-" + orderId);
+            throw new OrderNotFoundException("There is no id-" + orderId);
         }
 
     }
@@ -88,6 +106,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             Order order = em.find(Order.class, orderId);
             em.getTransaction().begin();
             order.setStatus("cancelled");
+            order.setModifiedDate(this.getDateNow());
             em.getTransaction().commit();
             em.close();
             return order;

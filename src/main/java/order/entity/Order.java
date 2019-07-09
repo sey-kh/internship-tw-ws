@@ -1,9 +1,9 @@
 package order.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
@@ -13,17 +13,28 @@ public class Order {
     @Id
     private String orderId;
 
+    @NotNull
     private String account;
 
+    @NotNull
     private String symbol;
 
+    @NotNull
     private int quantity;
 
+    @NotNull
     private boolean buy;
 
-    private BigDecimal limitPrice;
+    private BigDecimal limitPrice; // limitPrice can be null (such an order is called "market order")
 
+    @NotNull
     private String Status;
+
+    @NotNull
+    private String orderDate;
+
+    @NotNull
+    private String modifiedDate;
 
     // Getter and Setter
 
@@ -81,6 +92,22 @@ public class Order {
 
     public void setStatus(String status) {
         Status = status;
+    }
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(String modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 
 }

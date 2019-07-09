@@ -11,6 +11,27 @@ public class OrderRest {
     private boolean buy;
     private BigDecimal limitPrice;
     private String status;
+    private String orderDate;
+    private String modifiedDate;
+
+
+    // Getter and Setter
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(String modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
     public String getOrderId() {
         return orderId;

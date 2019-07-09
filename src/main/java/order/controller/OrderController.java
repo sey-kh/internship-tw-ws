@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +27,16 @@ public class OrderController {
     @Autowired
     private OrderRepositoryCustom orderRepositoryCustom;
 
-
+    // return all orders for the given account and symbol
+    // returns all orders for the given account
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<Order> getOrders(@RequestParam(value = "account", required = true) String account,
                                  @RequestParam(value = "symbol", defaultValue = "") String symbol) {
-        List<Order> orders = orderRepositoryCustom.findOrdersByAccountAndSymbol(account, symbol);
-        return orders;
+        return orderRepositoryCustom.findOrdersByAccountAndSymbol(account, symbol);
     }
 
 
+    // return a particular order corresponding to request orderId
     @GetMapping(path = "/{orderId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public OrderRest getOrder(@PathVariable String orderId) {
         OrderRest returnValue = new OrderRest();
@@ -49,12 +51,18 @@ public class OrderController {
         return returnValue;
     }
 
+    // create order and return orderId
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
     public HashMap<String, String> createOrder(@RequestBody OrderReqDetailsModel orderReq) {
 
         Order order = new Order();
         orderReq.setStatus("confirmed");
+
+
+        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
+        orderReq.setOrderDate(now);
+        orderReq.setModifiedDate(now);
 
         BeanUtils.copyProperties(orderReq, order);
 
@@ -67,6 +75,7 @@ public class OrderController {
         return returnValue;
     }
 
+    // Update order quantity
     @PatchMapping(path = "/{orderId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
     public OrderRest updateOrder(@PathVariable String orderId,
@@ -80,6 +89,7 @@ public class OrderController {
         return returnValue;
     }
 
+    // Cancel order
     @PatchMapping(path = "/cancel")
     public HashMap<String, String> cancelOrder(
             @RequestBody HashMap cancelReq) {

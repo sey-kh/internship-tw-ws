@@ -10,6 +10,24 @@ public class OrderReqDetailsModel {
     private boolean buy;
     private BigDecimal limitPrice;
     private String status;
+    private String orderDate;
+    private String modifiedDate;
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(String modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
     public String getAccount() {
         return account;
