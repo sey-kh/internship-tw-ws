@@ -23,6 +23,10 @@ public class Order {
 
     private BigDecimal limitPrice;
 
+    private String Status;
+
+    // Getter and Setter
+
     public String getOrderId() {
         return orderId;
     }
@@ -78,7 +82,5 @@ public class Order {
     public void setStatus(String status) {
         Status = status;
     }
-
-    private String Status;
 
 }

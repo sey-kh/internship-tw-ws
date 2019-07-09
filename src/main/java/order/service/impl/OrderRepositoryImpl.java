@@ -1,6 +1,7 @@
 package order.service.impl;
 
 import order.entity.Order;
+import order.exceptions.OrderNotFoundException;
 import order.service.OrderRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,6 +30,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
+        // Define Predicate conditions
         if (symbol.length() == 0) {
             predicates.add(cb.equal(order.get("account"), account));
 
@@ -37,26 +39,38 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             predicates.add(cb.equal(order.get("symbol"), symbol));
         }
         cq.where(predicates.toArray(new Predicate[0]));
+
         List<Order> results = em.createQuery(cq).getResultList();
         em.close();
+
         return results;
     }
 
     @Override
     public Order updateQuantity(int quantity, String orderId) {
         EntityManager em = emf.createEntityManager();
-        Order order = em.find(Order.class, orderId);
-        em.getTransaction().begin();
-        order.setQuantity(quantity);
-        em.getTransaction().commit();
-        em.close();
-        return order;
+
+        try{
+            Order order = em.find(Order.class, orderId);
+            em.getTransaction().begin();
+            order.setQuantity(quantity);
+            em.getTransaction().commit();
+            em.close();
+            return order;
+        }
+        catch (NullPointerException e){
+            em.close();
+            throw new OrderNotFoundException("id-" + orderId);
+        }
+
     }
 
     @Override
     public String createOrder(Order order) {
+
         String uniqueID = UUID.randomUUID().toString();
         order.setOrderId(uniqueID);
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(order);
@@ -68,12 +82,21 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     @Override
     public Order cancelOrder(String orderId) {
         EntityManager em = emf.createEntityManager();
-        Order order = em.find(Order.class, orderId);
-        em.getTransaction().begin();
-        order.setStatus("cancelled");
-        em.getTransaction().commit();
-        em.close();
-        return order;
+
+        try
+        {
+            Order order = em.find(Order.class, orderId);
+            em.getTransaction().begin();
+            order.setStatus("cancelled");
+            em.getTransaction().commit();
+            em.close();
+            return order;
+        }
+        catch(NullPointerException e)
+        {
+            em.close();
+            throw new OrderNotFoundException("id-" + orderId);
+        }
     }
 
 }

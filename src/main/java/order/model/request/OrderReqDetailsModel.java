@@ -3,6 +3,7 @@ package order.model.request;
 import java.math.BigDecimal;
 
 public class OrderReqDetailsModel {
+
     private String account;
     private String symbol;
     private int quantity;
