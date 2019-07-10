@@ -36,7 +36,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> cq = cb.createQuery(Order.class);
         Root<Order> order = cq.from(Order.class);
-        cq.orderBy(cb.asc(order.get("orderDate")));
+        cq.orderBy(cb.desc(order.get("orderDate")));
 
         List<Predicate> predicates = new ArrayList<>();
 
