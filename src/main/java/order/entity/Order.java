@@ -23,7 +23,7 @@ public class Order {
     private int quantity;
 
     @NotNull
-    private boolean buy;
+    private Boolean buy;
 
     private BigDecimal limitPrice; // limitPrice can be null (such an order is called "market order")
 
@@ -37,6 +37,14 @@ public class Order {
     private String modifiedDate;
 
     // Getter and Setter
+
+    public Boolean getBuy() {
+        return buy;
+    }
+
+    public void setBuy(Boolean buy) {
+        this.buy = buy;
+    }
 
     public String getOrderId() {
         return orderId;
@@ -68,14 +76,6 @@ public class Order {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public boolean isBuy() {
-        return buy;
-    }
-
-    public void setBuy(boolean buy) {
-        this.buy = buy;
     }
 
     public BigDecimal getLimitPrice() {

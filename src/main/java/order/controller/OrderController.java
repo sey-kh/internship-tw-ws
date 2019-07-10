@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +55,10 @@ public class OrderController {
     // create order and return orderId
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, String> createOrder(@RequestBody OrderReqDetailsModel orderReq) {
+    public HashMap<String, String> createOrder(@Valid @RequestBody OrderReqDetailsModel orderReq) {
 
         Order order = new Order();
         orderReq.setStatus("confirmed");
-
 
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
         orderReq.setOrderDate(now);

@@ -7,11 +7,19 @@ public class OrderReqDetailsModel {
     private String account;
     private String symbol;
     private int quantity;
-    private boolean buy;
+    private Boolean buy;
     private BigDecimal limitPrice;
     private String status;
     private String orderDate;
     private String modifiedDate;
+
+    public Boolean getBuy() {
+        return buy;
+    }
+
+    public void setBuy(Boolean buy) {
+        this.buy = buy;
+    }
 
     public String getOrderDate() {
         return orderDate;
@@ -51,14 +59,6 @@ public class OrderReqDetailsModel {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public boolean isBuy() {
-        return buy;
-    }
-
-    public void setBuy(boolean buy) {
-        this.buy = buy;
     }
 
     public BigDecimal getLimitPrice() {

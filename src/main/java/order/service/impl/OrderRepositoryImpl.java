@@ -87,10 +87,16 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         order.setOrderId(uniqueID);
 
         EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.persist(order);
-        em.getTransaction().commit();
-        em.close();
+        try{
+            em.getTransaction().begin();
+            em.persist(order);
+            em.getTransaction().commit();
+            em.close();
+        }
+        catch (Exception e){
+            em.close();
+            throw e;
+        }
         return uniqueID;
     }
 
