@@ -2,8 +2,8 @@ package order.controller;
 
 import order.entity.Order;
 import order.exceptions.OrderNotFoundException;
+import order.exceptions.UserError;
 import order.model.request.OrderReqDetailsModel;
-import order.model.request.OrderReqPartialModel;
 import order.model.response.OrderRest;
 import order.service.OrderRepository;
 import order.service.OrderRepositoryCustom;
@@ -79,14 +79,15 @@ public class OrderController {
     @PatchMapping(path = "/{orderId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
     public OrderRest updateOrder(@PathVariable String orderId,
-                                 @RequestBody OrderReqPartialModel updateQuantity) {
+                                 @RequestBody HashMap updateReq) {
 
-        Order order = orderRepositoryCustom.updateQuantity(updateQuantity.getQuantity(), orderId);
-
-        OrderRest returnValue = new OrderRest();
-        BeanUtils.copyProperties(order, returnValue);
-
-        return returnValue;
+        if (updateReq.get("quantity") == null) throw new UserError("You can update only quantity!");
+        else{
+            Order order = orderRepositoryCustom.updateQuantity((Integer) updateReq.get("quantity"), orderId);
+            OrderRest returnValue = new OrderRest();
+            BeanUtils.copyProperties(order, returnValue);
+            return returnValue;
+        }
     }
 
     // Cancel order
