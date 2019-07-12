@@ -1,17 +1,38 @@
 package order.model.request;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public class OrderReqDetailsModel {
+public class orderReqDetails {
 
+    @NotNull
     private String account;
+
+    @NotNull
     private String symbol;
-    private int quantity;
+
+    @NotNull
+    private Integer quantity;
+
+    @NotNull
     private Boolean buy;
+
     private BigDecimal limitPrice;
+
+
     private String status;
     private String orderDate;
     private String modifiedDate;
+
+    // Getter and Setter
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public Boolean getBuy() {
         return buy;
@@ -53,14 +74,6 @@ public class OrderReqDetailsModel {
         this.symbol = symbol;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public BigDecimal getLimitPrice() {
         return limitPrice;
     }
@@ -68,7 +81,6 @@ public class OrderReqDetailsModel {
     public void setLimitPrice(BigDecimal limitPrice) {
         this.limitPrice = limitPrice;
     }
-
 
     public String getStatus() {
         return status;

@@ -21,12 +21,15 @@ import java.util.UUID;
 @Repository
 public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
-    @Autowired
-    private EntityManagerFactory emf;
+    private final EntityManagerFactory emf;
 
-    public String getDateNow() {
-        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
-        return now;
+    @Autowired
+    public OrderRepositoryImpl(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
+    private String getDateNow() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
     }
 
     @Override
@@ -57,12 +60,31 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @Override
+    public String createOrder(Order order) {
+
+        String uniqueID = UUID.randomUUID().toString();
+        order.setOrderId(uniqueID);
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(order);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            em.close();
+            throw e;
+        }
+        return uniqueID;
+    }
+
+    @Override
     public Order updateQuantity(int quantity, String orderId) {
         EntityManager em = emf.createEntityManager();
 
         try {
             Order order = em.find(Order.class, orderId);
-            if (order.getStatus() == "confirmed") {
+            if (order.getStatus().equals("confirmed")) {
                 em.getTransaction().begin();
                 order.setQuantity(quantity);
                 order.setModifiedDate(this.getDateNow());
@@ -70,7 +92,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 em.close();
                 return order;
             } else {
-                throw new UserError("You tried to update to cancelled order");
+                em.close();
+                throw new UserError("You can not update order which already cancelled");
             }
 
         } catch (NullPointerException e) {
@@ -81,37 +104,23 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public String createOrder(Order order) {
-
-        String uniqueID = UUID.randomUUID().toString();
-        order.setOrderId(uniqueID);
-
-        EntityManager em = emf.createEntityManager();
-        try{
-            em.getTransaction().begin();
-            em.persist(order);
-            em.getTransaction().commit();
-            em.close();
-        }
-        catch (Exception e){
-            em.close();
-            throw e;
-        }
-        return uniqueID;
-    }
-
-    @Override
     public Order cancelOrder(String orderId) {
         EntityManager em = emf.createEntityManager();
 
         try {
             Order order = em.find(Order.class, orderId);
-            em.getTransaction().begin();
-            order.setStatus("cancelled");
-            order.setModifiedDate(this.getDateNow());
-            em.getTransaction().commit();
-            em.close();
-            return order;
+            if (order.getStatus().equals("confirmed")) {
+                em.getTransaction().begin();
+                order.setStatus("cancelled");
+                order.setModifiedDate(this.getDateNow());
+                em.getTransaction().commit();
+                em.close();
+                return order;
+            } else {
+                em.close();
+                throw new UserError("You can not update order which already cancelled");
+            }
+
         } catch (NullPointerException e) {
             em.close();
             throw new OrderNotFoundException("id-" + orderId);

@@ -20,7 +20,7 @@ public class Order {
     private String symbol;
 
     @NotNull
-    private int quantity;
+    private Integer quantity;
 
     @NotNull
     private Boolean buy;
@@ -38,12 +38,12 @@ public class Order {
 
     // Getter and Setter
 
-    public Boolean getBuy() {
-        return buy;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setBuy(Boolean buy) {
-        this.buy = buy;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public String getOrderId() {
@@ -70,12 +70,12 @@ public class Order {
         this.symbol = symbol;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public Boolean getBuy() {
+        return buy;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setBuy(Boolean buy) {
+        this.buy = buy;
     }
 
     public BigDecimal getLimitPrice() {
@@ -109,5 +109,4 @@ public class Order {
     public void setModifiedDate(String modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
-
 }

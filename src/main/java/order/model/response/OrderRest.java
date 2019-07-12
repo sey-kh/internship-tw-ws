@@ -7,7 +7,7 @@ public class OrderRest {
     private String orderId;
     private String account;
     private String symbol;
-    private int quantity;
+    private Integer quantity;
     private Boolean buy;
     private BigDecimal limitPrice;
     private String status;
@@ -16,6 +16,14 @@ public class OrderRest {
 
 
     // Getter and Setter
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public Boolean getBuy() {
         return buy;
@@ -63,14 +71,6 @@ public class OrderRest {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 
     public BigDecimal getLimitPrice() {
