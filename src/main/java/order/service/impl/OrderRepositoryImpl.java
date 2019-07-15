@@ -2,7 +2,7 @@ package order.service.impl;
 
 import order.entity.Order;
 import order.exceptions.OrderNotFoundException;
-import order.exceptions.preConditionError;
+import order.exceptions.ConditionError;
 import order.service.OrderRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -93,7 +93,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 return order;
             } else {
                 em.close();
-                throw new preConditionError("You can not update order which already cancelled");
+                throw new ConditionError("You can not update order which already cancelled");
             }
 
         } catch (NullPointerException e) {
@@ -118,7 +118,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 return order;
             } else {
                 em.close();
-                throw new preConditionError("You can not update order which already cancelled");
+                throw new ConditionError("You can not update order which already cancelled");
             }
 
         } catch (NullPointerException e) {
