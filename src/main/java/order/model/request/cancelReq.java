@@ -1,17 +1,16 @@
 package order.model.request;
 
-import javax.validation.constraints.NotNull;
-
 public class cancelReq {
+    // we're going to define some attributes which required in order to perform cancel action
 
-    public String getOrderId() {
-        return orderId;
+    public String getToken() {
+        return token;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    @NotNull
-    private String orderId;
+    private String token;
+
 }

@@ -10,10 +10,14 @@ import order.service.OrderRepository;
 import order.service.OrderRepositoryCustom;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +61,7 @@ public class OrderController {
     // create order and return orderId
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
-    public HashMap<String, String> createOrder(@Valid @RequestBody orderReqDetails orderReq) {
+    public ResponseEntity<Object> createOrder(@Valid @RequestBody orderReqDetails orderReq) {
 
         Order order = new Order();
         orderReq.setStatus("confirmed");
@@ -74,7 +78,10 @@ public class OrderController {
         returnValue.put("orderId", orderId);
         returnValue.put("status", order.getStatus());
 
-        return returnValue;
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(orderId)
+                .toUri();
+
+        return ResponseEntity.created(location).body(returnValue);
     }
 
     // Update order quantity
@@ -87,22 +94,32 @@ public class OrderController {
         OrderRest returnValue = new OrderRest();
         BeanUtils.copyProperties(order, returnValue);
         return returnValue;
-
     }
 
     // Cancel order
-    @PatchMapping(path = "/cancel")
-    public HashMap<String, String> cancelOrder(
+    @PostMapping(path = "/cancel/{orderId}")
+    public ResponseEntity<Object> cancelOrder(
+            @PathVariable String orderId,
             @Valid @RequestBody cancelReq req) {
 
-        String orderId = req.getOrderId();
-        Order order = orderRepositoryCustom.cancelOrder(orderId);
+        // validate cancel privilege
+        // In this case I assumed this validation
 
-        HashMap<String, String> returnValue = new HashMap<>();
-        returnValue.put("orderId", orderId);
-        returnValue.put("status", order.getStatus());
+        if (req.getToken().equals("OhKo6WJUpd")){
+            Order order = orderRepositoryCustom.cancelOrder(orderId);
 
-        return returnValue;
+            HashMap<String, String> returnValue = new HashMap<>();
+            returnValue.put("orderId", orderId);
+            returnValue.put("modifiedDate", order.getModifiedDate());
+            returnValue.put("status", order.getStatus());
+
+            return ResponseEntity.ok(returnValue);
+        }
+        else{
+            HashMap<String, String> returnValue = new HashMap<>();
+            returnValue.put("faultstring", "Authentication Failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
+        }
     }
 
 }
