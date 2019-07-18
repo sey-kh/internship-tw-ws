@@ -1,0 +1,52 @@
+package order.model.request;
+import order.model.BaseOrderModel;
+
+import javax.validation.constraints.NotNull;
+import java.util.Date;
+
+public class ComplexOrderReqDetailsModel extends BaseOrderModel {
+
+    @NotNull
+    private String activation;
+
+    private String side;
+
+    private Integer minQuantity;
+
+    private String activationDate;
+
+    // Getter and Setter
+
+    public String getActivation() {
+        return activation;
+    }
+
+    public void setActivation(String activation) {
+        this.activation = activation;
+    }
+
+    public String getSide() {
+        return side;
+    }
+
+    public void setSide(String side) {
+        this.side = side;
+    }
+
+    public Integer getMinQuantity() {
+        return minQuantity;
+    }
+
+    public void setMinQuantity(Integer minQuantity) {
+        this.minQuantity = minQuantity;
+    }
+
+    public String getActivationDate() {
+        return activationDate;
+    }
+
+    public void setActivationDate(String activationDate) {
+        this.activationDate = activationDate;
+    }
+}
+

@@ -1,8 +1,10 @@
-package order.model.response;
+package order.model.request;
 
-import order.model.BaseOrderModel;
+import order.constant.Consts;
 
-public class OrderRest extends BaseOrderModel {
+import javax.validation.constraints.NotNull;
+
+public class CancelReqModel {
 
     public String getOrderId() {
         return orderId;
@@ -12,5 +14,6 @@ public class OrderRest extends BaseOrderModel {
         this.orderId = orderId;
     }
 
+    @NotNull
     private String orderId;
 }

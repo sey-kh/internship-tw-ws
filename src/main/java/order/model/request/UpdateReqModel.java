@@ -2,7 +2,7 @@ package order.model.request;
 
 import javax.validation.constraints.NotNull;
 
-public class qtyUpdateReq {
+public class UpdateReqModel {
 
     public Integer getQuantity() {
         return quantity;
@@ -14,7 +14,4 @@ public class qtyUpdateReq {
 
     @NotNull
     private Integer quantity;
-
 }
-
-
