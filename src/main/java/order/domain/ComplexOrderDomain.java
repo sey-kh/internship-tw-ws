@@ -39,13 +39,15 @@ public class ComplexOrderDomain {
         List<ComplexOrder> allOrders = get_to_be_activated_orders(list, _list);
 
         OrderDomain.activateOrder(allOrders);
+
+        complexOrderRepository.deleteInBatch(list);
     }
 
     // return all complex orders that can be activated by other order
     public static List<ComplexOrder> get_to_be_activated_orders(List<ComplexOrder> list, List<ComplexOrder> allOrders) {
         if (list.size() != 0) {
             ComplexOrder o = list.get(0);
-            String side = ((o.getBuy()) ? "sale" : "buy");
+            String side = ((o.getBuy()) ? Consts.SALE : Consts.BUY);
             String symbol = o.getSymbol();
             Integer quantity = o.getQuantity();
             List<ComplexOrder> orders = complexOrderRepository.findAllByParams(symbol, side, quantity);
