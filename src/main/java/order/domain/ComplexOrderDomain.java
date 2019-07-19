@@ -103,10 +103,10 @@ public class ComplexOrderDomain {
 
         try {
             ComplexOrder order = complexOrderRepository.findById(req.getOrderId()).get();
-            order.setStatus(Consts.CANCEL);
             if (order.getStatus().equals(Consts.CANCEL)){
                 throw new ConditionError("Order already cancelled!");
             }
+            order.setStatus(Consts.CANCEL);
             complexOrderRepository.save(order);
             return order;
         } catch (NoSuchElementException e) {
