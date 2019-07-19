@@ -34,13 +34,16 @@ public class ComplexOrderDomain {
         // find all complex orders where its activationDate reached
         List<ComplexOrder> list = complexOrderRepository.findAllWithCurrentDateBefore(time);
 
-        // get all others complex orders where can be activated by these
-        List<ComplexOrder> _list = new ArrayList<>();
-        List<ComplexOrder> allOrders = get_to_be_activated_orders(list, _list);
-
-        OrderDomain.activateOrder(allOrders);
-
-        complexOrderRepository.deleteInBatch(list);
+        if (list.size() != 0){
+            // get all others complex orders where can be activated by these
+            List<ComplexOrder> _list = new ArrayList<>();
+            List<ComplexOrder> allOrders = get_to_be_activated_orders(list, _list);
+            OrderDomain.activateOrder(allOrders);
+            complexOrderRepository.deleteInBatch(allOrders);
+        }
+        else {
+            Consts.LOGGER.info("There is no complex order to be activated");
+        }
     }
 
     // return all complex orders that can be activated by other order

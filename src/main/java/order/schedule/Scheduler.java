@@ -8,9 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 import java.util.Date;
 
@@ -23,15 +20,11 @@ public class Scheduler {
         return new java.util.Date();
     }
 
-    private final static Logger LOGGER =
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
-    @Scheduled(cron = "0 */1 * ? * *")
+    @Scheduled(cron = "0 */5 * ? * *")
     public void activateOrder() {
-
         DateFormat dateFormat = new SimpleDateFormat(Consts.TIME_STAMP_FORMAT);
         String strDate = dateFormat.format(getDateNow());
-        LOGGER.log(Level.INFO, "====> ActivateOrder task running at" + strDate);
+        Consts.LOGGER.info("Schedule Task --> ActivateOrderByTime at "+ strDate);
         ComplexOrderDomain.activateByTime(getDateNow());
     }
 }
