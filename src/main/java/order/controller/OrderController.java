@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.*;
@@ -53,9 +52,7 @@ public class OrderController {
             MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> createOrder(@Valid @RequestBody OrderReqDetailsModel req) {
 
-        Order order = OrderDomain.prepareOrderObj(req);
-
-        OrderDomain.addOrder(order);
+        Order order = OrderDomain.addOrder(req);
 
         // response
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(order.getOrderId())

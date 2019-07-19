@@ -1,6 +1,7 @@
 package order.domain;
 
 import order.constant.Consts;
+import order.entity.ComplexOrder;
 import order.entity.Order;
 import order.exceptions.ConditionError;
 import order.exceptions.NotFoundException;
@@ -28,15 +29,21 @@ public class OrderDomain {
         return new java.util.Date();
     }
 
+    public static void activateOrder(List<ComplexOrder> allOrders){
 
-    public static void addOrder(Order order) {
-        orderRepository.save(order);
-        // activation params
-        String side = ((order.getBuy()) ? "sale" : "buy");
-        ComplexOrderDomain.activateByOtherOrder(order.getSymbol(), side, order.getQuantity());
+        // prepare list of order objects
+        List<Order> orders = new ArrayList<>();
+
+        for (ComplexOrder o : allOrders){
+            Order order = new Order();
+            BeanUtils.copyProperties(o, order);
+            orders.add(order);
+        }
+        // create orders entries
+        orderRepository.saveAll(orders);
     }
 
-    public static Order prepareOrderObj(OrderReqDetailsModel req) {
+    public static Order addOrder(OrderReqDetailsModel req) {
         // order entity
         Order order = new Order();
 
@@ -49,6 +56,17 @@ public class OrderDomain {
         order.setOrderDate(getDateNow());
         order.setModifiedDate(getDateNow());
         order.setStatus(Consts.CONFIRMED);
+
+        // get all complex orders that can be activated by this order
+        ComplexOrder complexOrder = new ComplexOrder();
+        List<ComplexOrder> list = new ArrayList<>();
+        List<ComplexOrder> _list = new ArrayList<>();
+
+        BeanUtils.copyProperties(order, complexOrder);
+        list.add(complexOrder);
+
+        List<ComplexOrder> all_complex_orders = ComplexOrderDomain.get_to_be_activated_orders(list, _list);
+        activateOrder(all_complex_orders);
 
         return order;
     }

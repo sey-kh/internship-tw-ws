@@ -2,7 +2,6 @@ package order.domain;
 
 import order.constant.Consts;
 import order.entity.ComplexOrder;
-import order.entity.Order;
 import order.exceptions.ConditionError;
 import order.exceptions.NotFoundException;
 import order.model.request.CancelReqModel;
@@ -14,10 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class ComplexOrderDomain {
@@ -33,37 +29,37 @@ public class ComplexOrderDomain {
         return new java.util.Date();
     }
 
-    // activate complex order
-    private static void activate(ComplexOrder complexOrder) {
-
-        // prepare order object
-        Order order = new Order();
-        BeanUtils.copyProperties(complexOrder, order);
-
-        deleteOrder(complexOrder.getOrderId());
-
-        // send order to stock exchange
-        OrderDomain.addOrder(order);
-
-    }
-
     public static void activateByTime(Date time) {
 
-        // find all where its activationDate reached
-        List<ComplexOrder> orders = complexOrderRepository.findAllWithCurrentDateBefore(time);
+        // find all complex orders where its activationDate reached
+        List<ComplexOrder> list = complexOrderRepository.findAllWithCurrentDateBefore(time);
 
-        // activate all
-        for (ComplexOrder order : orders) {
-            activate(order);
-        }
+        // get all others complex orders where can be activated by these
+        List<ComplexOrder> _list = new ArrayList<>();
+        List<ComplexOrder> allOrders = get_to_be_activated_orders(list, _list);
+
+        OrderDomain.activateOrder(allOrders);
     }
 
-    static void activateByOtherOrder(String symbol, String side, Integer quantity) {
-        List<ComplexOrder> orders = complexOrderRepository.findAllByParams(symbol, side, quantity);
+    // return all complex orders that can be activated by other order
+    public static List<ComplexOrder> get_to_be_activated_orders(List<ComplexOrder> list, List<ComplexOrder> allOrders) {
+        if (list.size() != 0) {
+            ComplexOrder o = list.get(0);
+            String side = ((o.getBuy()) ? "sale" : "buy");
+            String symbol = o.getSymbol();
+            Integer quantity = o.getQuantity();
+            List<ComplexOrder> orders = complexOrderRepository.findAllByParams(symbol, side, quantity);
 
-        if (orders.size() != 0) {
-            ComplexOrder order = orders.get(0);
-            activate(order);
+            allOrders.add(o);
+            list.remove(o);
+
+            if (orders.size() != 0) {
+                list.addAll(orders);
+                complexOrderRepository.deleteInBatch(orders);
+            }
+            return get_to_be_activated_orders(list, allOrders);
+        } else {
+            return allOrders;
         }
     }
 
@@ -103,7 +99,7 @@ public class ComplexOrderDomain {
 
         try {
             ComplexOrder order = complexOrderRepository.findById(req.getOrderId()).get();
-            if (order.getStatus().equals(Consts.CANCEL)){
+            if (order.getStatus().equals(Consts.CANCEL)) {
                 throw new ConditionError("Order already cancelled!");
             }
             order.setStatus(Consts.CANCEL);
@@ -114,8 +110,4 @@ public class ComplexOrderDomain {
         }
     }
 
-    // delete entry
-    private static void deleteOrder(String orderId) {
-        complexOrderRepository.deleteById(orderId);
-    }
 }

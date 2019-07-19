@@ -26,7 +26,7 @@ public class Scheduler {
     private final static Logger LOGGER =
             Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-    @Scheduled(cron = "0 */5 * ? * *")
+    @Scheduled(cron = "0 */1 * ? * *")
     public void activateOrder() {
 
         DateFormat dateFormat = new SimpleDateFormat(Consts.TIME_STAMP_FORMAT);
