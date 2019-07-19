@@ -8,6 +8,8 @@ public class CreateRest {
     private String status;
     private Date orderDate;
 
+    // Getter and Setter
+
     public Date getOrderDate() {
         return orderDate;
     }

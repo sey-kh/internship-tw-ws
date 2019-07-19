@@ -1,10 +1,9 @@
 package order.model.request;
-import order.model.BaseOrderModel;
+import order.model.response.OrderRest;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
-public class ComplexOrderReqDetailsModel extends BaseOrderModel {
+public class ComplexOrderReqDetailsModel extends OrderRest {
 
     @NotNull
     private String activation;

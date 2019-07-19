@@ -1,6 +1,6 @@
 package order.model.request;
 
-import order.model.BaseOrderModel;
+import order.model.response.OrderRest;
 
-public class OrderReqDetailsModel extends BaseOrderModel {
+public class OrderReqDetailsModel extends OrderRest {
 }
