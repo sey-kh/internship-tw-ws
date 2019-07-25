@@ -1,9 +1,9 @@
-package order.entity;
+package order.io.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "order_table")
-public class Order extends BaseOrder{
+public class Order extends BaseOrder {
 }

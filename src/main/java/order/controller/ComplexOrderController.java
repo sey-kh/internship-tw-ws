@@ -1,26 +1,35 @@
 package order.controller;
 
-import order.domain.ComplexOrderDomain;
-import order.entity.ComplexOrder;
 import order.exceptions.ActivationParamsException;
+import order.io.entity.ComplexOrder;
 import order.model.request.CancelReqModel;
 import order.model.request.ComplexOrderReqDetailsModel;
 import order.model.response.CancelRest;
 import order.model.response.CreateRest;
+import order.schedule.Scheduler;
+import order.service.ComplexOrderService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-
 import java.net.URI;
 
 @RestController
 @RequestMapping("/complex-orders")
 public class ComplexOrderController {
 
+    private static ComplexOrderService complexOrderService;
+
+    @Autowired
+    public ComplexOrderController(ComplexOrderService complexOrderService) {
+        ComplexOrderController.complexOrderService = complexOrderService;
+    }
+
+    // add new complex order
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {
             MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> createOrder(@Valid @RequestBody ComplexOrderReqDetailsModel req) {
@@ -32,7 +41,7 @@ public class ComplexOrderController {
             return ResponseEntity.badRequest().body(valObj.body);
         }
 
-        ComplexOrder order = ComplexOrderDomain.addOrder(req);
+        ComplexOrder order = complexOrderService.addOrder(req);
 
         // response object
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(order.getOrderId())
@@ -50,12 +59,26 @@ public class ComplexOrderController {
     public ResponseEntity<Object> cancelOrder(
             @Valid @RequestBody CancelReqModel req) {
 
-        ComplexOrder order = ComplexOrderDomain.cancelOrder(req);
+        ComplexOrder order = complexOrderService.cancelOrder(req);
 
         // response
         CancelRest returnValue = new CancelRest();
         BeanUtils.copyProperties(order, returnValue);
         return ResponseEntity.ok(returnValue);
+    }
+
+    // testing purpose -> display orders in debug console
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Object> getOrders() {
+        complexOrderService.displayOrders();
+        return null;
+    }
+
+    // testing purpose -> request to execute task
+    @GetMapping("/activate-bytime")
+    public ResponseEntity<Object> runScheduler() {
+        Scheduler.schedulingTask();
+        return null;
     }
 }
 

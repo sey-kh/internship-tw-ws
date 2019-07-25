@@ -1,4 +1,4 @@
-package order.entity;
+package order.io.entity;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
