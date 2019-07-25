@@ -98,9 +98,9 @@ public class ActivationServiceImpl implements ActivationService {
     @Override
     public void activateByOrder(Order o) {
         List<ComplexOrder> toBeActivatedOrders = getToBeActivated(o.getSymbol(),o.getBuy(), o.getQuantity());
-//        if (toBeActivatedOrders.size()!=0){
-//            // activate all complex orders
-//            activateComplexOrder(toBeActivatedOrders);
-//        }
+        if (toBeActivatedOrders.size()!=0){
+            // activate all complex orders
+            activateComplexOrder(toBeActivatedOrders);
+        }
     }
 }
