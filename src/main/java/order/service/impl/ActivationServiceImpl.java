@@ -26,35 +26,44 @@ public class ActivationServiceImpl implements ActivationService {
         ActivationServiceImpl.orderRepository = orderRepository;
     }
 
-
     @Override
-    public List<ComplexOrder> get_to_be_activated_orders(List<ComplexOrder> list) {
+    public List<ComplexOrder> getToBeActivated(String symbol, Boolean buy, Integer quantity){
 
-        List<ComplexOrder> to_be_activated_orders = new ArrayList<>(list);
-        List<ComplexOrder> allOrders = new ArrayList<>();
+        List<ComplexOrder> complexOrders = new ArrayList<>();
+        List<ComplexOrder> listForIterate = new ArrayList<>();
 
-        while (to_be_activated_orders.size() > 0) {
-            ComplexOrder o = to_be_activated_orders.get(0);
+        do {
+            if (listForIterate.size() == 0){
+                // get all complex orders that are waiting to be triggered
+                List<ComplexOrder> orders = complexOrderRepository.findAllByParams(symbol, buy, quantity);
 
-            // activation params
-            String side = ((o.getBuy()) ? Consts.SALE : Consts.BUY);
-            String symbol = o.getSymbol();
-            Integer quantity = o.getQuantity();
-
-            List<ComplexOrder> orders = complexOrderRepository.findAllByParams(symbol, side, quantity);
-
-            if (orders != null) {
-                to_be_activated_orders.addAll(orders);
-                complexOrderRepository.delete_orders_by_other_order_in_batch(orders);
+                // expand iteration
+                if (orders!=null){
+                    listForIterate.addAll(orders);
+                    complexOrderRepository.deleteInBatch(orders, Consts.ByOtherOrder);
+                }
             }
-            allOrders.add(o);
-            to_be_activated_orders.remove(0);
-        }
-        return allOrders;
+            else {
+                ComplexOrder o = listForIterate.get(0);
+                // get all complex orders that are waiting to be triggered
+                List<ComplexOrder> orders = complexOrderRepository.findAllByParams(o.getSymbol(), o.getBuy(), o.getQuantity());
+
+                complexOrders.add(o);
+                listForIterate.remove(o);
+
+                // expand iteration
+                if (orders!=null) {
+                    listForIterate.addAll(orders);
+                    complexOrderRepository.deleteInBatch(orders, Consts.ByOtherOrder);
+                }
+            }
+        } while (listForIterate.size() > 0);
+
+        return complexOrders;
     }
 
     @Override
-    public void activateOrder(List<ComplexOrder> allOrders) {
+    public void activateComplexOrder(List<ComplexOrder> allOrders) {
         // prepare list of order objects
         List<Order> orders = new ArrayList<>();
 
@@ -67,37 +76,31 @@ public class ActivationServiceImpl implements ActivationService {
         orderRepository.saveAll(orders);
     }
 
-    @Override
-    public void activateByOrder(Order order) {
-        ComplexOrder complexOrder = new ComplexOrder();
-        BeanUtils.copyProperties(order, complexOrder);
-
-        List<ComplexOrder> list = new ArrayList<>();
-        list.add(complexOrder);
-
-        List<ComplexOrder> _list = new ArrayList<>();
-        List<ComplexOrder> allOrders = get_to_be_activated_orders(list);
-
-        // activate all
-        activateOrder(allOrders);
-    }
-
     // for scheduling task
     @Override
     public void activateByTime(Date time) {
         List<ComplexOrder> list = complexOrderRepository.findAllWithCurrentDateBefore(time);
 
-        if (list != null) {
-            complexOrderRepository.delete_orders_by_time_in_batch(list);
-
-            // get all others complex orders where can be activated by these
-            List<ComplexOrder> allOrders = get_to_be_activated_orders(list);
-
-            // activate all
-            activateOrder(allOrders);
-        } else {
-            Consts.LOGGER.info("There is no complex order to be activated");
+        if (list!=null){
+            List<ComplexOrder> toBeActivatedOrders = new ArrayList<>(list);
+            for (ComplexOrder o:list){
+                List<ComplexOrder> result = getToBeActivated(o.getSymbol(), o.getBuy(), o.getQuantity());
+                if (result.size()!=0)
+                    toBeActivatedOrders.addAll(result);
+            }
+            // activate all complex orders
+            activateComplexOrder(toBeActivatedOrders);
+            complexOrderRepository.deleteInBatch(list, Consts.ByTime);
         }
+        else Consts.LOGGER.info("There is no complex order to be activated");
     }
 
+    @Override
+    public void activateByOrder(Order o) {
+        List<ComplexOrder> toBeActivatedOrders = getToBeActivated(o.getSymbol(),o.getBuy(), o.getQuantity());
+//        if (toBeActivatedOrders.size()!=0){
+//            // activate all complex orders
+//            activateComplexOrder(toBeActivatedOrders);
+//        }
+    }
 }

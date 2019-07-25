@@ -3,16 +3,15 @@ package order.benchmark;
 import order.WsApplication;
 import order.constant.Consts;
 import order.io.entity.ComplexOrder;
-import order.io.entity.Order;
 import order.io.repository.ComplexOrderRepository;
-import order.service.ActivationService;
+import order.model.request.OrderReqDetailsModel;
+import order.service.OrderService;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -43,14 +42,15 @@ public class ProcessBenchmarking {
 
     private static ConfigurableApplicationContext context;
     private static ComplexOrderRepository complexOrderRepository;
-    private static ActivationService activationService;
+    private static OrderService orderService;
 
     private static Date getDateNow() {
         return new java.util.Date();
     }
 
-    private Order makeOrder() {
-        Order order = new Order();
+    private ComplexOrder makeComplexOrder() {
+        ComplexOrder order = new ComplexOrder();
+
         order.setAccount("acc_1");
         order.setBuy(true);
         order.setLimitPrice(BigDecimal.valueOf(100));
@@ -63,13 +63,6 @@ public class ProcessBenchmarking {
         order.setOrderDate(getDateNow());
         order.setModifiedDate(getDateNow());
         order.setStatus(Consts.CONFIRMED);
-
-        return order;
-    }
-
-    private ComplexOrder makeComplexOrder() {
-        ComplexOrder order = new ComplexOrder();
-        BeanUtils.copyProperties(makeOrder(), order);
 
         order.setMinQuantity(100);
         order.setActivation("ByOtherOrder");
@@ -87,7 +80,7 @@ public class ProcessBenchmarking {
         }
 
         complexOrderRepository = context.getBean(ComplexOrderRepository.class);
-        activationService = context.getBean(ActivationService.class);
+        orderService = context.getBean(OrderService.class);
 
         System.out.println(N);
 
@@ -98,8 +91,16 @@ public class ProcessBenchmarking {
     }
 
     @Benchmark
-    public void allOrder(Blackhole bh) {
-        activationService.activateByOrder(makeOrder());
+    public void allSimpleOrder(Blackhole bh) {
+        OrderReqDetailsModel req = new OrderReqDetailsModel();
+
+        req.setAccount("acc_1");
+        req.setBuy(true);
+        req.setQuantity(100);
+        req.setSymbol("aapl");
+        req.setLimitPrice(BigDecimal.valueOf(100));
+
+        orderService.addOrder(req);
     }
 }
 

@@ -99,6 +99,9 @@ public class OrderServiceImpl implements OrderService {
         order.setModifiedDate(getDateNow());
         order.setStatus(Consts.CONFIRMED);
 
+        //orderRepository.save(order);
+
+        // activate complex orders by this order
         activationService.activateByOrder(order);
 
         return order;

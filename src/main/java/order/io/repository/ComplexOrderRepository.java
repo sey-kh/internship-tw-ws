@@ -12,7 +12,7 @@ public interface ComplexOrderRepository {
 
     List<ComplexOrder> findAllWithCurrentDateBefore(Date currentDate);
 
-    List<ComplexOrder> findAllByParams(String symbol, String side, Integer quantity);
+    List<ComplexOrder> findAllByParams(String symbol, Boolean buy, Integer quantity);
 
     SortedSet<ComplexOrder> getAllOrders();
 
@@ -20,9 +20,7 @@ public interface ComplexOrderRepository {
 
     ComplexOrder save(ComplexOrder order);
 
-    void delete_orders_by_time_in_batch(List<ComplexOrder> orders);
-
-    void delete_orders_by_other_order_in_batch(List<ComplexOrder> orders);
+    void deleteInBatch(List<ComplexOrder> orders, String activation);
 
     void displayOrders();
 

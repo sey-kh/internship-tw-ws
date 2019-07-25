@@ -39,13 +39,12 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     }
 
     @Override
-    public void delete_orders_by_time_in_batch(List<ComplexOrder> orders) {
-        orders_by_time.removeAll(orders);
-    }
-
-    @Override
-    public void delete_orders_by_other_order_in_batch(List<ComplexOrder> orders) {
+    public void deleteInBatch(List<ComplexOrder> orders, String activation) {
         orders_by_other_orders.removeAll(orders);
+        if (activation.toLowerCase().trim().equals(Consts.ByTime))
+            orders_by_time.removeAll(orders);
+        else
+            orders_by_other_orders.removeAll(orders);
     }
 
     @Override
@@ -71,10 +70,14 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     }
 
     @Override
-    public List<ComplexOrder> findAllByParams(String symbol, String side, Integer quantity) {
+    public List<ComplexOrder> findAllByParams(String symbol, Boolean buy, Integer quantity) {
+        String side;
+        if (buy) side = Consts.SALE;
+        else side = Consts.BUY;
+        String finalSide = side;
 
         Predicate<ComplexOrder> byStatus = order -> order.getStatus().equals(Consts.CONFIRMED);
-        Predicate<ComplexOrder> bySide = order -> !order.getSide().equals(side);
+        Predicate<ComplexOrder> bySide = order -> !order.getSide().equals(finalSide);
         Predicate<ComplexOrder> bySymbol = order -> order.getSymbol().equals(symbol);
         Predicate<ComplexOrder> byMinQuantity = order -> order.getMinQuantity() <= quantity;
 

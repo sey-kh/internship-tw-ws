@@ -9,11 +9,12 @@ import java.util.List;
 
 @Service
 public interface ActivationService {
-    List<ComplexOrder> get_to_be_activated_orders(List<ComplexOrder> list);
 
-    void activateOrder(List<ComplexOrder> allOrders);
+    List<ComplexOrder> getToBeActivated(String symbol, Boolean buy, Integer quantity);
+
+    void activateComplexOrder(List<ComplexOrder> allOrders);
 
     void activateByTime(Date time);
 
-    void activateByOrder(Order order);
+    void activateByOrder(Order o);
 }
