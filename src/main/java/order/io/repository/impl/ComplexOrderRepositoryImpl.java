@@ -16,8 +16,11 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     private static SortedSet<ComplexOrder> orders_by_time;
 
     public ComplexOrderRepositoryImpl() {
-        orders_by_other_orders = new TreeSet<>(Comparator.comparing(ComplexOrder::getOrderId));
-        orders_by_time = new TreeSet<>(Comparator.comparing(ComplexOrder::getOrderId));
+        orders_by_other_orders = new TreeSet<>(Comparator.comparing(ComplexOrder::getOrderDate)
+                .reversed()
+                .thenComparing(ComplexOrder::getOrderId));
+        orders_by_time = new TreeSet<>(Comparator.comparing(ComplexOrder::getActivationDate)
+                .thenComparing(ComplexOrder::getOrderId));
     }
 
     @Override

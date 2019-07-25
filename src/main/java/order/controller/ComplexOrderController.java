@@ -17,6 +17,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Date;
+import java.util.SortedSet;
 
 @RestController
 @RequestMapping("/complex-orders")
@@ -75,6 +77,12 @@ public class ComplexOrderController {
     }
 
     // testing purpose -> request to execute task
+
+    private static Date getDateNow() {
+        return new java.util.Date();
+    }
+    private static SortedSet<ComplexOrder> test_Set;
+
     @GetMapping("/activate-bytime")
     public ResponseEntity<Object> runScheduler() {
         Scheduler.schedulingTask();
