@@ -108,10 +108,17 @@ public class ActivationServiceImplTest {
         Order order = TestUtils.makeSimpleOrder("acc_1",
                 true, BigDecimal.valueOf(100), symbol, 100);
 
-        activationService.activateByOrder(order);
-
         List<ComplexOrder> complexOrders = complexOrderRepository.findBySymbol(symbol);
         List<Order> orders = orderService.getOrderBySymbol(symbol);
+
+        // Measure size of complexOrders and orders of aapl symbol
+        assertEquals(40, complexOrders.size());
+        assertEquals(0, orders.size());
+
+        activationService.activateByOrder(order);
+
+        complexOrders = complexOrderRepository.findBySymbol(symbol);
+        orders = orderService.getOrderBySymbol(symbol);
 
         // out of 40 complex orders waiting to be trigger by future order there are 30 have been activated
         assertEquals(30, orders.size());
