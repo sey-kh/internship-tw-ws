@@ -100,6 +100,7 @@ public class ActivationServiceImplTest {
         }
     }
 
+    // test activateByOrder service
     @Test
     public void activateByOrder(){
         String symbol = "aapl";
@@ -123,6 +124,7 @@ public class ActivationServiceImplTest {
         assertEquals(20, amzn_complexOrders.size());
     }
 
+    // test activateByTime service
     @Test
     public void activateByTime(){
         Date currentDate = TestUtils.getDateNow();
