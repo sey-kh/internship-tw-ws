@@ -49,6 +49,8 @@ public class ComplexOrderServiceImplTest {
     // trying to add 10000 complex orders
     @Test
     public void addComplexOrder() {
+        SortedSet<ComplexOrder> allOrders = complexOrderService.getAllOrders();
+        assertEquals(10, allOrders.size());
 
         for (int i = 0; i < 5000; i++) {
             ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
@@ -64,7 +66,7 @@ public class ComplexOrderServiceImplTest {
             complexOrderService.addOrder(req);
         }
         // retrieving all complex orders
-        SortedSet<ComplexOrder> allOrders = complexOrderService.getAllOrders();
+        allOrders = complexOrderService.getAllOrders();
         // check whether all orders have been added
         assertEquals(10010, allOrders.size());
     }
@@ -74,6 +76,10 @@ public class ComplexOrderServiceImplTest {
     public void cancelComplexOrder() {
         // retrieving all complex orders have been added during setup
         SortedSet<ComplexOrder> allOrders = complexOrderService.getAllOrders();
+
+        for (ComplexOrder o:allOrders){
+            assertEquals(o.getStatus(), Consts.CONFIRMED);
+        }
 
         for (ComplexOrder o:allOrders){
 

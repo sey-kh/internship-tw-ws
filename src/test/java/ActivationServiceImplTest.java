@@ -111,7 +111,7 @@ public class ActivationServiceImplTest {
         List<ComplexOrder> complexOrders = complexOrderRepository.findBySymbol(symbol);
         List<Order> orders = orderService.getOrderBySymbol(symbol);
 
-        // Measure size of complexOrders and orders of aapl symbol
+        // Measure size of complexOrders and orders of aapl symbol before they are being manipulated
         assertEquals(40, complexOrders.size());
         assertEquals(0, orders.size());
 
@@ -135,13 +135,21 @@ public class ActivationServiceImplTest {
     @Test
     public void activateByTime(){
         Date currentDate = TestUtils.getDateNow();
-        activationService.activateByTime(currentDate);
 
         SortedSet<ComplexOrder> allComplexOrders = complexOrderRepository.getAllOrders();
+        List<Order> allOrders = orderService.getOrderByAccount("acc_1");
+
+        // Measure size of allComplexOrders and allOrders before they are being manipulated
+        assertEquals(0, allOrders.size());
+        assertEquals(60, allComplexOrders.size());
+
+        activationService.activateByTime(currentDate);
+
+        allComplexOrders = complexOrderRepository.getAllOrders();
         // 20 complex orders waiting to be triggered by time have been activated and they also activate all other complex orders
         assertEquals(0, allComplexOrders.size());
 
-        List<Order> allOrders = orderService.getOrderByAccount("acc_1");
+        allOrders = orderService.getOrderByAccount("acc_1");
         // 60 complex orders have been activated
         assertEquals(60, allOrders.size());
     }
