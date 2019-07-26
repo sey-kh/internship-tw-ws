@@ -14,14 +14,15 @@ public interface ComplexOrderRepository {
 
     List<ComplexOrder> findAllByParams(String symbol, Boolean buy, Integer quantity);
 
-    SortedSet<ComplexOrder> getAllOrders();
+    List<ComplexOrder> findBySymbol(String symbol);
 
-    ComplexOrder getById(String orderId);
+    ComplexOrder findById(String orderId);
+
+    SortedSet<ComplexOrder> getAllOrders();
 
     ComplexOrder save(ComplexOrder order);
 
     void deleteInBatch(List<ComplexOrder> orders, String activation);
-
-    void displayOrders();
+    void deleteAll();
 
 }

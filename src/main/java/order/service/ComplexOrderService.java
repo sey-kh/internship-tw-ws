@@ -5,19 +5,17 @@ import order.model.request.CancelReqModel;
 import order.model.request.ComplexOrderReqDetailsModel;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.SortedSet;
 
 @Service
 public interface ComplexOrderService {
-
-    Date getDateNow();
 
     ComplexOrder addOrder(ComplexOrderReqDetailsModel req);
 
     ComplexOrder cancelOrder(CancelReqModel req);
 
-    void displayOrders();
+    SortedSet<ComplexOrder> getAllOrders();
 
-    void addBatchOrders();
+    void displayOrders();
 
 }

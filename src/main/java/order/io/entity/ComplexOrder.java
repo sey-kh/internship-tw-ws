@@ -35,6 +35,13 @@ public class ComplexOrder implements Comparable<ComplexOrder> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date activationDate;
 
+    public Date getActivationDate() {
+        return activationDate;
+    }
+
+    public void setActivationDate(Date activationDate) {
+        this.activationDate = activationDate;
+    }
 
     public String getStatus() {
         return status;
@@ -130,14 +137,6 @@ public class ComplexOrder implements Comparable<ComplexOrder> {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
-    }
-
-    public Date getActivationDate() {
-        return activationDate;
-    }
-
-    public void setActivationDate(Date activationDate) {
-        this.activationDate = activationDate;
     }
 
     @Override

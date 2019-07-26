@@ -51,10 +51,9 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     }
 
     @Override
-    public void displayOrders() {
-        System.out.println("----> All complex orders:");
-        SortedSet<ComplexOrder> allOrders = this.getAllOrders();
-        System.out.println("-------------------------");
+    public void deleteAll() {
+        orders_by_other_orders.clear();
+        orders_by_time.clear();
     }
 
     @Override
@@ -95,7 +94,7 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     }
 
     @Override
-    public ComplexOrder getById(String orderId) {
+    public ComplexOrder findById(String orderId) {
 
         Predicate<ComplexOrder> byId = o -> o.getOrderId().equals(orderId);
 
@@ -106,5 +105,17 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
         if (orders.size() != 0) {
             return orders.first();
         } else return null;
+    }
+
+    @Override
+    public List<ComplexOrder> findBySymbol(String symbol) {
+
+        Predicate<ComplexOrder> bySymbol = o -> o.getSymbol().equals(symbol);
+
+        SortedSet<ComplexOrder> allOrders = getAllOrders();
+
+        List<ComplexOrder> orders = allOrders.stream().filter(bySymbol).collect(Collectors.toList());
+
+        return orders;
     }
 }

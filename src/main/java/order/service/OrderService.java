@@ -6,13 +6,10 @@ import order.model.request.OrderReqDetailsModel;
 import order.model.request.UpdateReqModel;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
 public interface OrderService {
-
-    Date getDateNow();
 
     Order addOrder(OrderReqDetailsModel req);
 
@@ -23,6 +20,8 @@ public interface OrderService {
     Order getOrderById(String orderId);
 
     List<Order> getOrderByAccount(String account);
+
+    List<Order> getOrderBySymbol(String symbol);
 
     List<Order> findByAccountAndSymbol(String account, String symbol);
 }
