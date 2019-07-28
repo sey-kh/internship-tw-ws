@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.SortedSet;
+import java.util.List;
 
 @Service
 public class ComplexOrderServiceImpl implements ComplexOrderService {
@@ -76,13 +76,13 @@ public class ComplexOrderServiceImpl implements ComplexOrderService {
 
     // for testing task, display allOrders in debug console
     @Override
-    public SortedSet<ComplexOrder> getAllOrders() {
+    public List<ComplexOrder> getAllOrders() {
         return complexOrderRepository.getAllOrders();
     }
 
     @Override
     public void displayOrders(){
-        SortedSet<ComplexOrder> allOrders = complexOrderRepository.getAllOrders();
+        List<ComplexOrder> allOrders = complexOrderRepository.getAllOrders();
         System.out.println(allOrders);
     }
 

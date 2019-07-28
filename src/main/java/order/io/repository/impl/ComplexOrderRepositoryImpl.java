@@ -5,6 +5,8 @@ import order.io.entity.ComplexOrder;
 import order.io.repository.ComplexOrderRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -12,60 +14,126 @@ import java.util.stream.Collectors;
 @Service
 public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
 
-    private static SortedSet<ComplexOrder> orders_by_other_orders;
-    private static SortedSet<ComplexOrder> orders_by_time;
+    private static Map<String, SortedSet<ComplexOrder>> orderByTime;
+    private static Map<String, Map<String, SortedSet<ComplexOrder>>> orderByOtherOrder;
 
     public ComplexOrderRepositoryImpl() {
-        orders_by_other_orders = new TreeSet<>(Comparator.comparing(ComplexOrder::getOrderDate)
-                .reversed()
-                .thenComparing(ComplexOrder::getOrderId));
-        orders_by_time = new TreeSet<>(Comparator.comparing(ComplexOrder::getActivationDate)
-                .thenComparing(ComplexOrder::getOrderId));
+        orderByTime = new LinkedHashMap<>();
+        orderByOtherOrder = new LinkedHashMap<>();
     }
 
     @Override
-    public SortedSet<ComplexOrder> getAllOrders() {
-        SortedSet<ComplexOrder> allOrders = new TreeSet<>(orders_by_other_orders);
-        allOrders.addAll(orders_by_time);
+    public List<ComplexOrder> getAllOrders() {
+
+        List<ComplexOrder> allOrders = new ArrayList<>();
+
+        for (Map.Entry<String, SortedSet<ComplexOrder>> entry : orderByTime.entrySet()) {
+            SortedSet<ComplexOrder> orders = entry.getValue();
+            allOrders.addAll(orders);
+        }
+
+        for (Map.Entry<String, Map<String, SortedSet<ComplexOrder>>> entry : orderByOtherOrder.entrySet()) {
+            Map<String, SortedSet<ComplexOrder>> symbolMap = entry.getValue();
+            for (Map.Entry<String, SortedSet<ComplexOrder>> sideMap : symbolMap.entrySet()) {
+                SortedSet<ComplexOrder> orders = sideMap.getValue();
+                allOrders.addAll(orders);
+            }
+        }
+
         return allOrders;
     }
 
     @Override
     public ComplexOrder save(ComplexOrder order) {
         if (order.getActivation().toLowerCase().trim().equals(Consts.ByTime)) {
-            orders_by_time.add(order);
-            return order;
+
+            SortedSet<ComplexOrder> newOrders = new TreeSet<>(Comparator.comparing(ComplexOrder::getActivationDate)
+                    .thenComparing(ComplexOrder::getOrderId));
+            newOrders.add(order);
+
+            Date activationDate = order.getActivationDate();
+            DateFormat outputFormatter = new SimpleDateFormat("MM/dd/yyyy");
+            String key = outputFormatter.format(activationDate);
+
+            if (orderByTime.containsKey(key)) {
+                SortedSet<ComplexOrder> orderList = orderByTime.get(key);
+                orderList.add(order);
+                return order;
+            } else {
+                orderByTime.put(key, newOrders);
+                return order;
+            }
         } else {
-            orders_by_other_orders.add(order);
-            return order;
+            SortedSet<ComplexOrder> newOrders = new TreeSet<>(Comparator.comparing(ComplexOrder::getMinQuantity)
+                    .thenComparing(ComplexOrder::getOrderId));
+            newOrders.add(order);
+
+            String side = order.getSide();
+            String symbol = order.getSymbol();
+
+            if (orderByOtherOrder.containsKey(symbol)) {
+                Map<String, SortedSet<ComplexOrder>> symbolEntry = orderByOtherOrder.get(symbol);
+
+                for (Map.Entry<String, SortedSet<ComplexOrder>> sideEntry : symbolEntry.entrySet()) {
+                    if (sideEntry.getKey().equals(side)) {
+                        sideEntry.getValue().add(order);
+                        return order;
+                    }
+                }
+                symbolEntry.put(side, newOrders);
+                return order;
+            } else {
+                Map<String, SortedSet<ComplexOrder>> listMap = new LinkedHashMap<>();
+                listMap.put(side, newOrders);
+                orderByOtherOrder.put(symbol, listMap);
+                return order;
+            }
         }
     }
 
     @Override
     public void deleteInBatch(List<ComplexOrder> orders, String activation) {
-        orders_by_other_orders.removeAll(orders);
         if (activation.toLowerCase().trim().equals(Consts.ByTime))
-            orders_by_time.removeAll(orders);
-        else
-            orders_by_other_orders.removeAll(orders);
+            for (Map.Entry<String, SortedSet<ComplexOrder>> entry : orderByTime.entrySet()) {
+                entry.getValue().removeAll(orders);
+            }
+        else {
+            for (Map.Entry<String, Map<String, SortedSet<ComplexOrder>>> symbolEntry : orderByOtherOrder.entrySet()) {
+                Map<String, SortedSet<ComplexOrder>> symbolMap = symbolEntry.getValue();
+                for (Map.Entry<String, SortedSet<ComplexOrder>> sideEntry : symbolMap.entrySet()) {
+                    sideEntry.getValue().removeAll(orders);
+                }
+            }
+        }
     }
 
     @Override
     public void deleteAll() {
-        orders_by_other_orders.clear();
-        orders_by_time.clear();
+        orderByTime.clear();
+        orderByOtherOrder.clear();
     }
 
     @Override
     public List<ComplexOrder> findAllWithCurrentDateBefore(Date currentDate) {
 
+        DateFormat outputFormatter = new SimpleDateFormat("MM/dd/yyyy");
+        String key = outputFormatter.format(currentDate);
+
         Predicate<ComplexOrder> byBeforeCurrentDate = order -> order.getActivationDate().before(currentDate);
         Predicate<ComplexOrder> byStatus = order -> order.getStatus().equals(Consts.CONFIRMED);
 
-        if (orders_by_time.size() != 0) {
-            return orders_by_time.stream()
-                    .filter(byBeforeCurrentDate)
-                    .filter(byStatus).collect(Collectors.toList());
+        if (orderByTime.size() != 0) {
+            List<ComplexOrder> result = new ArrayList<>();
+
+            for (Map.Entry<String, SortedSet<ComplexOrder>> entry : orderByTime.entrySet()) {
+                if (entry.getKey().equals(key)) {
+                    List<ComplexOrder> orders = entry.getValue().stream()
+                            .filter(byBeforeCurrentDate)
+                            .filter(byStatus).collect(Collectors.toList());
+                    result.addAll(orders);
+                }
+            }
+            return result;
         } else {
             return null;
         }
@@ -76,20 +144,26 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
         String side;
         if (buy) side = Consts.SALE;
         else side = Consts.BUY;
-        String finalSide = side;
 
         Predicate<ComplexOrder> byStatus = order -> order.getStatus().equals(Consts.CONFIRMED);
-        Predicate<ComplexOrder> bySide = order -> !order.getSide().equals(finalSide);
-        Predicate<ComplexOrder> bySymbol = order -> order.getSymbol().equals(symbol);
         Predicate<ComplexOrder> byMinQuantity = order -> order.getMinQuantity() <= quantity;
 
-        if (orders_by_other_orders.size() != 0) {
-            return orders_by_other_orders.stream()
-                    .filter(byStatus)
-                    .filter(bySide)
-                    .filter(bySymbol)
-                    .filter(byMinQuantity)
-                    .collect(Collectors.toList());
+        if (orderByOtherOrder.size() != 0) {
+            List<ComplexOrder> result = new ArrayList<>();
+
+            Map<String, SortedSet<ComplexOrder>> symbolEntry = orderByOtherOrder.get(symbol);
+
+            for (Map.Entry<String, SortedSet<ComplexOrder>> sideEntry : symbolEntry.entrySet()) {
+                if (!sideEntry.getKey().equals(side)) {
+                    List<ComplexOrder> orders = sideEntry.getValue().stream()
+                            .filter(byStatus)
+                            .filter(byMinQuantity)
+                            .collect(Collectors.toList());
+                    result.addAll(orders);
+                }
+            }
+
+            return result;
         } else return null;
     }
 
@@ -98,7 +172,7 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
 
         Predicate<ComplexOrder> byId = o -> o.getOrderId().equals(orderId);
 
-        SortedSet<ComplexOrder> allOrders = getAllOrders();
+        List<ComplexOrder> allOrders = getAllOrders();
 
         SortedSet<ComplexOrder> orders = allOrders.stream().filter(byId).collect(Collectors.toCollection(()
                 -> new TreeSet<>(Comparator.comparing(ComplexOrder::getOrderId))));
@@ -112,10 +186,8 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
 
         Predicate<ComplexOrder> bySymbol = o -> o.getSymbol().equals(symbol);
 
-        SortedSet<ComplexOrder> allOrders = getAllOrders();
+        List<ComplexOrder> allOrders = getAllOrders();
 
-        List<ComplexOrder> orders = allOrders.stream().filter(bySymbol).collect(Collectors.toList());
-
-        return orders;
+        return allOrders.stream().filter(bySymbol).collect(Collectors.toList());
     }
 }

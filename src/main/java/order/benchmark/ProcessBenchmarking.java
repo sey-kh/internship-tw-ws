@@ -17,7 +17,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.Throughput)
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessBenchmarking {
 
-    @Param({"10000"})
+    @Param({"100", "1000","10000"})
     private int N;
 
     public static void main(String[] args) throws RunnerException {
@@ -64,7 +63,7 @@ public class ProcessBenchmarking {
     }
 
     @Benchmark
-    public void allSimpleOrder(Blackhole bh) {
+    public void addSimpleOrder(Blackhole bh) {
         OrderReqDetailsModel req = new OrderReqDetailsModel();
 
         req.setAccount("acc_1");
@@ -78,7 +77,8 @@ public class ProcessBenchmarking {
 
 
     private ComplexOrder makeComplexOrder(String acc,
-                                          Boolean buy, BigDecimal limitPrice, String symbol, Integer quantity, String side, Integer minQuantity) {
+                                          Boolean buy, BigDecimal limitPrice, String symbol, Integer quantity,
+                                          String side, Integer minQuantity) {
 
         ComplexOrder order = new ComplexOrder();
 
@@ -100,10 +100,6 @@ public class ProcessBenchmarking {
         order.setMinQuantity(minQuantity);
 
         return order;
-    }
-
-    private static Date getDateNow() {
-        return new java.util.Date();
     }
 }
 

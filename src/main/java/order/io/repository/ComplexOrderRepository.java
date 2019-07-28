@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
 
 @Repository
 public interface ComplexOrderRepository {
@@ -16,13 +15,12 @@ public interface ComplexOrderRepository {
 
     List<ComplexOrder> findBySymbol(String symbol);
 
-    ComplexOrder findById(String orderId);
+    List<ComplexOrder> getAllOrders();
 
-    SortedSet<ComplexOrder> getAllOrders();
+    ComplexOrder findById(String orderId);
 
     ComplexOrder save(ComplexOrder order);
 
     void deleteInBatch(List<ComplexOrder> orders, String activation);
     void deleteAll();
-
 }

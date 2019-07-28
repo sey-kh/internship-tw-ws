@@ -18,7 +18,6 @@ import shared.TestUtils;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -103,8 +102,12 @@ public class ActivationServiceImplTest {
     // test activateByOrder service
     @Test
     public void activateByOrder(){
-        String symbol = "aapl";
 
+        List<ComplexOrder> allOrders = complexOrderRepository.getAllOrders();
+
+        assertEquals(60, allOrders.size());
+
+        String symbol = "aapl";
         Order order = TestUtils.makeSimpleOrder("acc_1",
                 true, BigDecimal.valueOf(100), symbol, 100);
 
@@ -136,7 +139,7 @@ public class ActivationServiceImplTest {
     public void activateByTime(){
         Date currentDate = TestUtils.getDateNow();
 
-        SortedSet<ComplexOrder> allComplexOrders = complexOrderRepository.getAllOrders();
+        List<ComplexOrder> allComplexOrders = complexOrderRepository.getAllOrders();
         List<Order> allOrders = orderService.getOrderByAccount("acc_1");
 
         // Measure size of allComplexOrders and allOrders before they are being manipulated

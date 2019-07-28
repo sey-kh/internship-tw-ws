@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import shared.TestUtils;
 
 import java.math.BigDecimal;
-import java.util.SortedSet;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,12 +45,19 @@ public class ComplexOrderServiceImplTest {
 
             complexOrderRepository.save(order);
         }
+
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
+                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNowStr(),
+                    null, null);
+            complexOrderService.addOrder(req);
+        }
     }
     // trying to add 10000 complex orders
     @Test
     public void addComplexOrder() {
-        SortedSet<ComplexOrder> allOrders = complexOrderService.getAllOrders();
-        assertEquals(10, allOrders.size());
+        List<ComplexOrder> allOrders = complexOrderService.getAllOrders();
+        assertEquals(20, allOrders.size());
 
         for (int i = 0; i < 5000; i++) {
             ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
@@ -66,16 +73,16 @@ public class ComplexOrderServiceImplTest {
             complexOrderService.addOrder(req);
         }
         // retrieving all complex orders
-        allOrders = complexOrderService.getAllOrders();
         // check whether all orders have been added
-        assertEquals(10010, allOrders.size());
+        allOrders = complexOrderService.getAllOrders();
+        assertEquals(10020, allOrders.size());
     }
 
     // cancel complex orders
     @Test
     public void cancelComplexOrder() {
         // retrieving all complex orders have been added during setup
-        SortedSet<ComplexOrder> allOrders = complexOrderService.getAllOrders();
+        List<ComplexOrder> allOrders = complexOrderService.getAllOrders();
 
         for (ComplexOrder o:allOrders){
             assertEquals(o.getStatus(), Consts.CONFIRMED);
