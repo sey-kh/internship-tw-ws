@@ -66,7 +66,7 @@ public class ComplexOrderServiceImpl implements ComplexOrderService {
         ComplexOrder order = complexOrderRepository.findById(req.getOrderId());
         if (order != null) {
             if (order.getStatus().equals(Consts.CONFIRMED)) {
-                order.setStatus(Consts.CANCEL);
+                order.setStatus(Consts.CANCELLED);
                 order.setModifiedDate(Utils.getDateNow());
                 return complexOrderRepository.save(order);
             } else throw new ConditionError("Can not update to cancelled order");

@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     public Order updateOrderQuantity(String orderId, UpdateReqModel req) {
         try {
             Order order = orderRepository.findById(orderId).get();
-            if (order.getStatus().equals(Consts.CANCEL)) {
+            if (order.getStatus().equals(Consts.CANCELLED)) {
                 throw new ConditionError("Can not update cancelled order!");
             }
             order.setQuantity(req.getQuantity());
@@ -49,10 +49,10 @@ public class OrderServiceImpl implements OrderService {
     public Order cancelOrder(CancelReqModel req) {
         try {
             Order order = orderRepository.findById(req.getOrderId()).get();
-            if (order.getStatus().equals(Consts.CANCEL)) {
+            if (order.getStatus().equals(Consts.CANCELLED)) {
                 throw new ConditionError("Order already cancelled!");
             }
-            order.setStatus(Consts.CANCEL);
+            order.setStatus(Consts.CANCELLED);
             order.setModifiedDate(Utils.getDateNow());
             orderRepository.save(order);
             return order;

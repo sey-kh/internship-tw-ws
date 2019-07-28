@@ -68,7 +68,7 @@ public class ActivationServiceImplTest {
         for (int i=0; i<10; i++){
             ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
                     false, BigDecimal.valueOf(100), "aapl", 100, Consts.ByOtherOrder, null,
-                    100, Consts.SALE);
+                    100, Consts.SELL);
             complexOrderRepository.save(order);
         }
 
@@ -76,7 +76,7 @@ public class ActivationServiceImplTest {
         for (int i=0; i<10; i++){
             ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
                     false, BigDecimal.valueOf(100), "amzn", 100, Consts.ByOtherOrder, null,
-                    100, Consts.SALE);
+                    100, Consts.SELL);
             complexOrderRepository.save(order);
         }
 

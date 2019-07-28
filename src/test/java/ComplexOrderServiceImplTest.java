@@ -97,7 +97,7 @@ public class ComplexOrderServiceImplTest {
 
         for (ComplexOrder o:allOrders){
             // check whether above 10 complex orders have been cancelled
-            assertEquals(o.getStatus(), Consts.CANCEL);
+            assertEquals(o.getStatus(), Consts.CANCELLED);
         }
     }
 }

@@ -142,7 +142,7 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     @Override
     public List<ComplexOrder> findAllByParams(String symbol, Boolean buy, Integer quantity) {
         String side;
-        if (buy) side = Consts.SALE;
+        if (buy) side = Consts.SELL;
         else side = Consts.BUY;
 
         Predicate<ComplexOrder> byStatus = order -> order.getStatus().equals(Consts.CONFIRMED);
