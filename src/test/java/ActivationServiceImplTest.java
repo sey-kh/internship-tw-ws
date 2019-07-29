@@ -102,12 +102,8 @@ public class ActivationServiceImplTest {
     // test activateByOrder service
     @Test
     public void activateByOrder(){
-
-        List<ComplexOrder> allOrders = complexOrderRepository.getAllOrders();
-
-        assertEquals(60, allOrders.size());
-
         String symbol = "aapl";
+
         Order order = TestUtils.makeSimpleOrder("acc_1",
                 true, BigDecimal.valueOf(100), symbol, 100);
 

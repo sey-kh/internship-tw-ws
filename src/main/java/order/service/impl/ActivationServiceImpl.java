@@ -38,7 +38,7 @@ public class ActivationServiceImpl implements ActivationService {
                 List<ComplexOrder> orders = complexOrderRepository.findAllByParams(symbol, buy, quantity);
 
                 // expand iteration
-                if (orders!=null){
+                if (orders.size()!=0){
                     listForIterate.addAll(orders);
                     complexOrderRepository.deleteInBatch(orders, Consts.ByOtherOrder);
                 }
@@ -52,7 +52,7 @@ public class ActivationServiceImpl implements ActivationService {
                 listForIterate.remove(o);
 
                 // expand iteration
-                if (orders!=null) {
+                if (orders.size()!=0) {
                     listForIterate.addAll(orders);
                     complexOrderRepository.deleteInBatch(orders, Consts.ByOtherOrder);
                 }
@@ -81,7 +81,7 @@ public class ActivationServiceImpl implements ActivationService {
     public void activateByTime(Date time) {
         List<ComplexOrder> list = complexOrderRepository.findAllWithCurrentDateBefore(time);
 
-        if (list!=null){
+        if (list.size()!=0){
             List<ComplexOrder> toBeActivatedOrders = new ArrayList<>(list);
             for (ComplexOrder o:list){
                 List<ComplexOrder> result = getToBeActivated(o.getSymbol(), o.getBuy(), o.getQuantity());

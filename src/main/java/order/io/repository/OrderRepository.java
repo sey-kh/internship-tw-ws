@@ -8,7 +8,10 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
+
     List<Order> findByAccount(String account);
+
     List<Order> findBySymbol(String symbol);
+
     List<Order> findByAccountAndSymbol(String account, String symbol);
 }

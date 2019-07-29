@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ComplexOrder implements Comparable<ComplexOrder> {
+public class ComplexOrder{
 
     private String orderId;
 
@@ -139,8 +139,4 @@ public class ComplexOrder implements Comparable<ComplexOrder> {
         this.orderDate = orderDate;
     }
 
-    @Override
-    public int compareTo(ComplexOrder o) {
-        return 0;
-    }
 }

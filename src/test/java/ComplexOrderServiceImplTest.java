@@ -45,19 +45,12 @@ public class ComplexOrderServiceImplTest {
 
             complexOrderRepository.save(order);
         }
-
-        for (int i = 0; i < 10; i++) {
-            ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
-                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNowStr(),
-                    null, null);
-            complexOrderService.addOrder(req);
-        }
     }
     // trying to add 10000 complex orders
     @Test
     public void addComplexOrder() {
         List<ComplexOrder> allOrders = complexOrderService.getAllOrders();
-        assertEquals(20, allOrders.size());
+        assertEquals(10, allOrders.size());
 
         for (int i = 0; i < 5000; i++) {
             ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
@@ -73,9 +66,9 @@ public class ComplexOrderServiceImplTest {
             complexOrderService.addOrder(req);
         }
         // retrieving all complex orders
-        // check whether all orders have been added
         allOrders = complexOrderService.getAllOrders();
-        assertEquals(10020, allOrders.size());
+        // check whether all orders have been added
+        assertEquals(10010, allOrders.size());
     }
 
     // cancel complex orders
@@ -101,5 +94,3 @@ public class ComplexOrderServiceImplTest {
         }
     }
 }
-
-
