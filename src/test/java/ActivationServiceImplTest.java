@@ -4,7 +4,9 @@ import order.io.entity.ComplexOrder;
 import order.io.entity.Order;
 import order.io.repository.ComplexOrderRepository;
 import order.io.repository.OrderRepository;
+import order.model.request.ComplexOrderReqDetailsModel;
 import order.service.ActivationService;
+import order.service.ComplexOrderService;
 import order.service.OrderService;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,9 @@ public class ActivationServiceImplTest {
     private ComplexOrderRepository complexOrderRepository;
 
     @Autowired
+    private ComplexOrderService complexOrderService;
+
+    @Autowired
     private OrderRepository orderRepository;
 
     @Before
@@ -49,59 +54,57 @@ public class ActivationServiceImplTest {
         // 20 by time (aapl:10, amzn:10))
 
         // add 10 buy orders of aapl waiting to be triggered by future buy order
-        for (int i=0; i<10; i++){
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
                     true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByOtherOrder, null,
                     100, Consts.BUY);
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
 
         // add 10 buy orders of aapl waiting to be triggered by any future order
-        for (int i=0; i<10; i++){
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
                     false, BigDecimal.valueOf(100), "aapl", 100, Consts.ByOtherOrder, null,
                     100, Consts.ANY);
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
 
         // add 10 sale orders of aapl waiting to be triggered by future sale order
-        for (int i=0; i<10; i++){
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
                     false, BigDecimal.valueOf(100), "aapl", 100, Consts.ByOtherOrder, null,
                     100, Consts.SELL);
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
 
         // add 10 sale orders of amzn waiting to be triggered by future sale order
-        for (int i=0; i<10; i++){
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
                     false, BigDecimal.valueOf(100), "amzn", 100, Consts.ByOtherOrder, null,
                     100, Consts.SELL);
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
 
         // add 10 buy orders of aapl waiting to be triggered by time
-        for (int i=0; i<10; i++){
-            Date activationDate = TestUtils.getDateNow();
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
-                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, activationDate,
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
+                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNowStr(),
                     null, null);
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
 
         // add 10 buy orders of amzn waiting to be triggered by time
-        for (int i=0; i<10; i++){
-            Date activationDate = TestUtils.getDateNow();
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
-                    false, BigDecimal.valueOf(100), "amzn", 100, Consts.ByTime, activationDate,
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
+                    false, BigDecimal.valueOf(100), "amzn", 100, Consts.ByTime, TestUtils.getDateNowStr(),
                     null, null);
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
     }
 
     // test activateByOrder service
     @Test
-    public void activateByOrder(){
+    public void activateByOrder() {
         String symbol = "aapl";
 
         Order order = TestUtils.makeSimpleOrder("acc_1",
@@ -132,7 +135,7 @@ public class ActivationServiceImplTest {
 
     // test activateByTime service
     @Test
-    public void activateByTime(){
+    public void activateByTime() {
         Date currentDate = TestUtils.getDateNow();
 
         List<ComplexOrder> allComplexOrders = complexOrderRepository.getAllOrders();

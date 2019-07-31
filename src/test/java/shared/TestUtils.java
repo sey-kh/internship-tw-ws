@@ -1,27 +1,25 @@
 package shared;
 
 import order.constant.Consts;
-import order.io.entity.ComplexOrder;
 import order.io.entity.Order;
 import order.model.request.CancelReqModel;
 import order.model.request.ComplexOrderReqDetailsModel;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.UUID;
 
 public class TestUtils {
 
-    public static long getTimeInMillis(){
+    public static String getDateNowStr() {
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        SimpleDateFormat sdf = new SimpleDateFormat(Consts.TIME_STAMP_FORMAT);
-        Calendar calendar = new GregorianCalendar(2019,07,31);
-
-        return calendar.getTimeInMillis();
+        return formatter.format(ts);
     }
 
     public static Date getDateNow() {
@@ -50,7 +48,7 @@ public class TestUtils {
         return order;
     }
 
-    public static CancelReqModel makeCancelReq(String orderId){
+    public static CancelReqModel makeCancelReq(String orderId) {
         CancelReqModel req = new CancelReqModel();
         req.setOrderId(orderId);
         return req;
@@ -59,7 +57,7 @@ public class TestUtils {
     public static ComplexOrderReqDetailsModel makeComplexOrderReqDetails(String acc,
                                                                          Boolean buy, BigDecimal limitPrice,
                                                                          String symbol, Integer quantity,
-                                                                         String activation, Date activationDate,
+                                                                         String activation, String activationDate,
                                                                          Integer minQuantity, String side) {
         ComplexOrderReqDetailsModel req = new ComplexOrderReqDetailsModel();
 
@@ -76,19 +74,5 @@ public class TestUtils {
         }
 
         return req;
-    }
-
-    public static ComplexOrder makeComplexOrder(String acc,
-                                                Boolean buy, BigDecimal limitPrice,
-                                                String symbol, Integer quantity,
-                                                String activation, Date activationDate,
-                                                Integer minQuantity, String side) {
-
-        ComplexOrderReqDetailsModel req = makeComplexOrderReqDetails(acc, buy, limitPrice, symbol, quantity, activation,
-                activationDate, minQuantity, side);
-
-        ComplexOrder order = new ComplexOrder();
-        BeanUtils.copyProperties(req, order);
-        return order;
     }
 }

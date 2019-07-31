@@ -35,7 +35,6 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
             }
         }
         allOrders.addAll(orderByTime);
-
         return allOrders;
     }
 
@@ -82,7 +81,6 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
                         listMap.put(side, newOrder);
                     }
                 }
-
                 orderByOtherOrder.put(symbol, listMap);
                 return order;
             }

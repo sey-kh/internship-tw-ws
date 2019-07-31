@@ -2,10 +2,7 @@ package order.model.request;
 
 import order.model.response.OrderRest;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 public class ComplexOrderReqDetailsModel extends OrderRest {
 
@@ -16,8 +13,7 @@ public class ComplexOrderReqDetailsModel extends OrderRest {
 
     private Integer minQuantity;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date activationDate;
+    private String activationDate;
 
     // Getter and Setter
 
@@ -45,11 +41,11 @@ public class ComplexOrderReqDetailsModel extends OrderRest {
         this.minQuantity = minQuantity;
     }
 
-    public Date getActivationDate() {
+    public String getActivationDate() {
         return activationDate;
     }
 
-    public void setActivationDate(Date activationDate) {
+    public void setActivationDate(String activationDate) {
         this.activationDate = activationDate;
     }
 }

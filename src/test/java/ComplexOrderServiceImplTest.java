@@ -38,14 +38,15 @@ public class ComplexOrderServiceImplTest {
         complexOrderRepository.deleteAll();
 
         // add 10 complex orders before each test
-        for (int i=0; i<10; i++){
-            ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
+        for (int i = 0; i < 10; i++) {
+            ComplexOrderReqDetailsModel order = TestUtils.makeComplexOrderReqDetails("acc_1",
                     true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByOtherOrder, null,
                     100, Consts.BUY);
 
-            complexOrderRepository.save(order);
+            complexOrderService.addOrder(order);
         }
     }
+
     // trying to add 10000 complex orders
     @Test
     public void addComplexOrder() {
@@ -54,7 +55,7 @@ public class ComplexOrderServiceImplTest {
 
         for (int i = 0; i < 5000; i++) {
             ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
-                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNow(),
+                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNowStr(),
                     null, null);
             complexOrderService.addOrder(req);
         }
@@ -77,18 +78,18 @@ public class ComplexOrderServiceImplTest {
         // retrieving all complex orders have been added during setup
         List<ComplexOrder> allOrders = complexOrderService.getAllOrders();
 
-        for (ComplexOrder o:allOrders){
+        for (ComplexOrder o : allOrders) {
             assertEquals(o.getStatus(), Consts.CONFIRMED);
         }
 
-        for (ComplexOrder o:allOrders){
+        for (ComplexOrder o : allOrders) {
 
             CancelReqModel req = TestUtils.makeCancelReq(o.getOrderId());
             // cancel order
             complexOrderService.cancelOrder(req);
         }
 
-        for (ComplexOrder o:allOrders){
+        for (ComplexOrder o : allOrders) {
             // check whether above 10 complex orders have been cancelled
             assertEquals(o.getStatus(), Consts.CANCELLED);
         }
