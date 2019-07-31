@@ -6,7 +6,6 @@ import order.model.request.CancelReqModel;
 import order.model.request.ComplexOrderReqDetailsModel;
 import order.model.response.CancelRest;
 import order.model.response.CreateRest;
-import order.schedule.Scheduler;
 import order.service.ComplexOrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,20 +64,6 @@ public class ComplexOrderController {
         CancelRest returnValue = new CancelRest();
         BeanUtils.copyProperties(order, returnValue);
         return ResponseEntity.ok(returnValue);
-    }
-
-    // testing purpose -> display orders in debug console
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> getOrders() {
-        complexOrderService.displayOrders();
-        return null;
-    }
-
-    // testing purpose -> request to execute task
-    @GetMapping("/activate-bytime")
-    public ResponseEntity<Object> runScheduler() {
-        Scheduler.schedulingTask();
-        return null;
     }
 }
 

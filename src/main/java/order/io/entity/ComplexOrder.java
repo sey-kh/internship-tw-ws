@@ -1,10 +1,11 @@
 package order.io.entity;
 
-import javax.persistence.*;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ComplexOrder{
+public class ComplexOrder {
 
     private String orderId;
 
@@ -35,6 +36,7 @@ public class ComplexOrder{
     @Temporal(TemporalType.TIMESTAMP)
     private Date activationDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getActivationDate() {
         return activationDate;
     }
@@ -138,5 +140,4 @@ public class ComplexOrder{
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
-
 }

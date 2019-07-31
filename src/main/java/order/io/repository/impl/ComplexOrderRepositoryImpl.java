@@ -18,13 +18,13 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
 
     public ComplexOrderRepositoryImpl() {
         orderByTime = new TreeSet<>(Comparator.comparing(ComplexOrder::getActivationDate)
-                .thenComparing(ComplexOrder::getOrderId));
+                .thenComparing(ComplexOrder::getOrderId)
+        );
         orderByOtherOrder = new HashMap<>();
     }
 
     @Override
     public List<ComplexOrder> getAllOrders() {
-
         List<ComplexOrder> allOrders = new ArrayList<>();
 
         for (Map.Entry<String, Map<String, NavigableSet<ComplexOrder>>> entry : orderByOtherOrder.entrySet()) {
@@ -69,17 +69,21 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
                 Map<String, NavigableSet<ComplexOrder>> listMap = new HashMap<>();
                 for (String s : allSides) {
                     if (!s.equals(side))
-                        listMap.put(s, new TreeSet<>(Comparator.comparing(ComplexOrder::getMinQuantity)
-                                .thenComparing(ComplexOrder::getOrderId)));
+                        listMap.put(s, new TreeSet<>(
+                                Comparator.comparing(ComplexOrder::getMinQuantity)
+                                        .thenComparing(ComplexOrder::getOrderId)
+                        ));
+                    else {
+                        NavigableSet<ComplexOrder> newOrder = new TreeSet<>(
+                                Comparator.comparing(ComplexOrder::getMinQuantity)
+                                        .thenComparing(ComplexOrder::getOrderId)
+                        );
+                        newOrder.add(order);
+                        listMap.put(side, newOrder);
+                    }
                 }
 
-                // put new order
-                NavigableSet<ComplexOrder> newOrder = new TreeSet<>(Comparator.comparing(ComplexOrder::getMinQuantity)
-                        .thenComparing(ComplexOrder::getOrderId));
-                newOrder.add(order);
-                listMap.put(side, newOrder);
                 orderByOtherOrder.put(symbol, listMap);
-
                 return order;
             }
         }
@@ -113,8 +117,7 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
         // make a headSet of overall set
         ComplexOrder o = new ComplexOrder();
         o.setActivationDate(currentDate);
-        o.setOrderId(UUID.randomUUID().toString());
-
+        o.setOrderId(String.valueOf(Character.MAX_VALUE));
         NavigableSet<ComplexOrder> headSet = orderByTime.headSet(o, true);
 
         // remove cancelled orders
@@ -138,26 +141,24 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
 
         Map<String, NavigableSet<ComplexOrder>> symbolEntry = orderByOtherOrder.get(symbol);
 
-        for (Map.Entry<String, NavigableSet<ComplexOrder>> sideEntry : symbolEntry.entrySet()) {
-            if (!sideEntry.getKey().equals(side)) {
+        if (symbolEntry != null) {
+            for (Map.Entry<String, NavigableSet<ComplexOrder>> sideEntry : symbolEntry.entrySet()) {
+                if (!sideEntry.getKey().equals(side)) {
+                    NavigableSet<ComplexOrder> orders = sideEntry.getValue();
 
-                NavigableSet<ComplexOrder> orders = sideEntry.getValue();
+                    if (orders.size() != 0) {
 
-                // condition to remove cancelled orders
-                Predicate<ComplexOrder> byStatus = order -> order.getStatus().equals(Consts.CONFIRMED);
-
-                if (orders.size() != 0) {
-                    if (orders.last().getMinQuantity() <= quantity) {
-                        result.addAll(orders.stream().filter(byStatus).collect(Collectors.toList()));
-                    } else {
                         // make a headSet of overall set
                         ComplexOrder o = new ComplexOrder();
                         o.setMinQuantity(quantity);
-                        o.setOrderId(UUID.randomUUID().toString());
-
+                        o.setOrderId(String.valueOf(Character.MAX_VALUE));
                         NavigableSet<ComplexOrder> headSet = orders.headSet(o, true);
 
-                        result.addAll(headSet.stream().filter(byStatus).collect(Collectors.toList()));
+                        // remove cancelled orders
+                        Predicate<ComplexOrder> byStatus = order -> order.getStatus().equals(Consts.CONFIRMED);
+
+                        if (headSet.size() != 0)
+                            result.addAll(headSet.stream().filter(byStatus).collect(Collectors.toList()));
                     }
                 }
             }

@@ -13,9 +13,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -46,15 +43,15 @@ public class ComplexOrderServiceImpl implements ComplexOrderService {
         order.setModifiedDate(Utils.getDateNow());
         order.setStatus(Consts.CONFIRMED);
 
-        if (req.getActivationDate() != null) {
-            try {
-                Date activationDate = new SimpleDateFormat(Consts.TIME_STAMP_FORMAT).parse(req.getActivationDate());
-                order.setActivationDate(activationDate);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new ConditionError("activationDate must be formatted as " + Consts.TIME_STAMP_FORMAT);
-            }
-        }
+//        if (req.getActivationDate() != null) {
+//            try {
+//                Date activationDate = new SimpleDateFormat(Consts.TIME_STAMP_FORMAT).parse(req.getActivationDate());
+//                order.setActivationDate(activationDate);
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//                throw new ConditionError("activationDate must be formatted as " + Consts.TIME_STAMP_FORMAT);
+//            }
+//        }
 
         complexOrderRepository.save(order);
 
@@ -78,12 +75,6 @@ public class ComplexOrderServiceImpl implements ComplexOrderService {
     @Override
     public List<ComplexOrder> getAllOrders() {
         return complexOrderRepository.getAllOrders();
-    }
-
-    @Override
-    public void displayOrders(){
-        List<ComplexOrder> allOrders = complexOrderRepository.getAllOrders();
-        System.out.println(allOrders);
     }
 
 }

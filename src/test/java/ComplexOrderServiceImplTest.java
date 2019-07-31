@@ -54,7 +54,7 @@ public class ComplexOrderServiceImplTest {
 
         for (int i = 0; i < 5000; i++) {
             ComplexOrderReqDetailsModel req = TestUtils.makeComplexOrderReqDetails("acc_1",
-                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNowStr(),
+                    true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, TestUtils.getDateNow(),
                     null, null);
             complexOrderService.addOrder(req);
         }

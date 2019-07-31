@@ -82,7 +82,7 @@ public class ActivationServiceImplTest {
 
         // add 10 buy orders of aapl waiting to be triggered by time
         for (int i=0; i<10; i++){
-            String activationDate = TestUtils.getDateNowStr();
+            Date activationDate = TestUtils.getDateNow();
             ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
                     true, BigDecimal.valueOf(100), "aapl", 100, Consts.ByTime, activationDate,
                     null, null);
@@ -91,7 +91,7 @@ public class ActivationServiceImplTest {
 
         // add 10 buy orders of amzn waiting to be triggered by time
         for (int i=0; i<10; i++){
-            String activationDate = TestUtils.getDateNowStr();
+            Date activationDate = TestUtils.getDateNow();
             ComplexOrder order = TestUtils.makeComplexOrder("acc_1",
                     false, BigDecimal.valueOf(100), "amzn", 100, Consts.ByTime, activationDate,
                     null, null);

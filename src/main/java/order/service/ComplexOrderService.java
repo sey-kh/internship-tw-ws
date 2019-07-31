@@ -16,6 +16,4 @@ public interface ComplexOrderService {
 
     List<ComplexOrder> getAllOrders();
 
-    void displayOrders();
-
 }
