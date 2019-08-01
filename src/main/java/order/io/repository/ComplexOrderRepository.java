@@ -21,7 +21,7 @@ public interface ComplexOrderRepository {
 
     ComplexOrder save(ComplexOrder order);
 
-    void deleteInBatch(List<ComplexOrder> orders, String activation);
+    Boolean deleteInBatch(List<ComplexOrder> orders, String activation);
 
     void deleteAll();
 }

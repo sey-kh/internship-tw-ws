@@ -87,16 +87,27 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
     }
 
     @Override
-    public void deleteInBatch(List<ComplexOrder> orders, String activation) {
-        if (activation.toLowerCase().trim().equals(Consts.ByTime))
-            orderByTime.removeAll(orders);
+    public Boolean deleteInBatch(List<ComplexOrder> orders, String activation) {
+        if (activation.toLowerCase().trim().equals(Consts.ByTime)) {
+            return orderByTime.removeAll(orders);
+        }
         else {
+            int numDeleted = 0;
             for (Map.Entry<String, Map<String, NavigableSet<ComplexOrder>>> symbolEntry : orderByOtherOrder.entrySet()) {
                 Map<String, NavigableSet<ComplexOrder>> symbolMap = symbolEntry.getValue();
                 for (Map.Entry<String, NavigableSet<ComplexOrder>> sideEntry : symbolMap.entrySet()) {
+
+                    int temp = sideEntry.getValue().size();
                     sideEntry.getValue().removeAll(orders);
+
+                    if (temp > sideEntry.getValue().size())
+                        numDeleted = numDeleted + (temp - sideEntry.getValue().size());
+
+                    if (numDeleted == orders.size())
+                        return true;
                 }
             }
+            return false;
         }
     }
 
