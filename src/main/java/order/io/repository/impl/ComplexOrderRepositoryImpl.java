@@ -54,7 +54,6 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
                 for (Map.Entry<String, NavigableSet<ComplexOrder>> sideEntry : symbolEntry.entrySet()) {
                     if (sideEntry.getKey().equals(side)) {
                         sideEntry.getValue().add(order);
-                        return order;
                     }
                 }
                 return order;
@@ -171,10 +170,9 @@ public class ComplexOrderRepositoryImpl implements ComplexOrderRepository {
 
         List<ComplexOrder> allOrders = getAllOrders();
 
-        SortedSet<ComplexOrder> orders = allOrders.stream().filter(byId).collect(Collectors.toCollection(()
-                -> new TreeSet<>(Comparator.comparing(ComplexOrder::getOrderId))));
+        List<ComplexOrder> orders = allOrders.stream().filter(byId).collect(Collectors.toList());
         if (orders.size() != 0) {
-            return orders.first();
+            return orders.get(0);
         } else return null;
     }
 
